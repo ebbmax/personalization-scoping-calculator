@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalization Scoping Calculator</title>
+    <!-- html2pdf.js for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- SLDS2 Styling -->
+    <style>
+        :root {
+            /* SLDS2 Color Tokens */
+            --slds-g-color-brand-base-50: #0176d3;
+            --slds-g-color-brand-base-40: #014486;
+            --slds-g-color-brand-base-60: #1b96ff;
+            --slds-g-color-neutral-base-100: #ffffff;
+            --slds-g-color-neutral-base-95: #f3f3f3;
+            --slds-g-color-neutral-base-90: #e5e5e5;
+            --slds-g-color-neutral-base-80: #c9c9c9;
+            --slds-g-color-neutral-base-70: #aeaeae;
+            --slds-g-color-neutral-base-50: #747474;
+            --slds-g-color-neutral-base-30: #444444;
+            --slds-g-color-neutral-base-20: #2e2e2e;
+            --slds-g-color-neutral-base-10: #181818;
+            --slds-g-color-success-base-50: #2e844a;
+            --slds-g-color-error-base-50: #ea001e;
+            --slds-g-color-warning-base-50: #dd7a01;
+            --slds-g-color-border-base-1: #c9c9c9;
+            --slds-g-color-border-base-2: #aeaeae;
+
+            /* SLDS2 Spacing Tokens */
+            --slds-g-spacing-1: 0.25rem;
+            --slds-g-spacing-2: 0.5rem;
+            --slds-g-spacing-3: 0.75rem;
+            --slds-g-spacing-4: 1rem;
+            --slds-g-spacing-5: 1.25rem;
+            --slds-g-spacing-6: 1.5rem;
+            --slds-g-spacing-8: 2rem;
+            --slds-g-spacing-10: 2.5rem;
+            --slds-g-spacing-12: 3rem;
+
+            /* SLDS2 Font Tokens */
+            --slds-g-font-family: 'Salesforce Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --slds-g-font-size-1: 0.625rem;
+            --slds-g-font-size-2: 0.75rem;
+            --slds-g-font-size-3: 0.8125rem;
+            --slds-g-font-size-4: 0.875rem;
+            --slds-g-font-size-5: 1rem;
+            --slds-g-font-size-6: 1.125rem;
+            --slds-g-font-size-7: 1.25rem;
+            --slds-g-font-size-8: 1.5rem;
+            --slds-g-font-size-9: 1.75rem;
+            --slds-g-font-weight-regular: 400;
+            --slds-g-font-weight-bold: 700;
+            --slds-g-line-height-heading: 1.25;
+            --slds-g-line-height-body: 1.5;
+
+            /* SLDS2 Border Radius */
+            --slds-g-radius-border-1: 0.25rem;
+            --slds-g-radius-border-2: 0.375rem;
+            --slds-g-radius-border-3: 0.5rem;
+            --slds-g-radius-border-circle: 50%;
+
+            /* SLDS2 Shadow Tokens */
+            --slds-g-shadow-1: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --slds-g-shadow-2: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --slds-g-shadow-3: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--slds-g-font-family);
+            font-size: var(--slds-g-font-size-4);
+            line-height: var(--slds-g-line-height-body);
+            color: var(--slds-g-color-neutral-base-20);
+            background-color: #eef2f7;
+            background-image: radial-gradient(circle at 20% 10%, rgba(1,118,211,0.06) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 90%, rgba(27,150,255,0.05) 0%, transparent 50%);
+            min-height: 100vh;
+        }
+
+        /* SLDS Form Elements */
+        .slds-form-element {
+            margin-bottom: var(--slds-g-spacing-5);
+        }
+
+        .slds-form-element__label {
+            display: block;
+            font-size: var(--slds-g-font-size-3);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-neutral-base-30);
+            margin-bottom: var(--slds-g-spacing-2);
+        }
+
+        .slds-form-element__label .slds-required {
+            color: var(--slds-g-color-error-base-50);
+        }
+
+        .slds-input,
+        .slds-select {
+            width: 100%;
+            padding: var(--slds-g-spacing-3) var(--slds-g-spacing-4);
+            font-size: var(--slds-g-font-size-4);
+            font-family: var(--slds-g-font-family);
+            color: var(--slds-g-color-neutral-base-20);
+            background-color: var(--slds-g-color-neutral-base-100);
+            border: 1px solid var(--slds-g-color-border-base-1);
+            border-radius: var(--slds-g-radius-border-2);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .slds-input:focus,
+        .slds-select:focus {
+            outline: none;
+            border-color: var(--slds-g-color-brand-base-50);
+            box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.2);
+        }
+
+        .slds-input::placeholder {
+            color: var(--slds-g-color-neutral-base-70);
+        }
+
+        .slds-input.slds-has-error {
+            border-color: var(--slds-g-color-error-base-50);
+        }
+
+        /* SLDS Buttons */
+        .slds-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--slds-g-spacing-3) var(--slds-g-spacing-6);
+            font-size: var(--slds-g-font-size-4);
+            font-weight: var(--slds-g-font-weight-bold);
+            font-family: var(--slds-g-font-family);
+            border-radius: var(--slds-g-radius-border-2);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            text-decoration: none;
+            min-height: 2.5rem;
+        }
+
+        .slds-button_brand {
+            background: linear-gradient(135deg, #0176d3, #014486);
+            color: var(--slds-g-color-neutral-base-100);
+            box-shadow: 0 2px 6px rgba(1, 118, 211, 0.35);
+        }
+
+        .slds-button_brand:hover {
+            background: linear-gradient(135deg, #1b96ff, #0176d3);
+            box-shadow: 0 4px 12px rgba(1, 118, 211, 0.4);
+        }
+
+        .slds-button_brand:focus {
+            box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.4);
+            outline: none;
+        }
+
+        .slds-button_neutral {
+            background-color: var(--slds-g-color-neutral-base-100);
+            color: var(--slds-g-color-brand-base-50);
+            border-color: var(--slds-g-color-border-base-1);
+        }
+
+        .slds-button_neutral:hover {
+            background-color: rgba(1, 118, 211, 0.05);
+            border-color: var(--slds-g-color-brand-base-50);
+        }
+
+        .slds-button_stretch {
+            width: 100%;
+        }
+
+        /* App Container */
+        .slds-app-container {
+            display: block;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: var(--slds-g-spacing-8) var(--slds-g-spacing-6);
+        }
+
+        /* Page Header */
+        .slds-page-header {
+            background: linear-gradient(120deg, #032d60 0%, #0176d3 100%);
+            padding: var(--slds-g-spacing-8) var(--slds-g-spacing-8);
+            border-radius: var(--slds-g-radius-border-3);
+            box-shadow: 0 4px 20px rgba(1, 118, 211, 0.3);
+            margin-bottom: var(--slds-g-spacing-6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slds-page-header::after {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -5%;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            pointer-events: none;
+        }
+
+        .slds-page-header__title {
+            font-size: var(--slds-g-font-size-9);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: #ffffff;
+            line-height: var(--slds-g-line-height-heading);
+        }
+
+        .slds-page-header__detail {
+            color: rgba(255,255,255,0.75);
+            margin-top: var(--slds-g-spacing-2);
+            font-size: var(--slds-g-font-size-4);
+        }
+
+        /* Progress Indicator */
+        .slds-progress {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: var(--slds-g-spacing-8);
+            padding: var(--slds-g-spacing-5) var(--slds-g-spacing-6);
+            background: var(--slds-g-color-neutral-base-100);
+            border-radius: var(--slds-g-radius-border-3);
+            box-shadow: var(--slds-g-shadow-1);
+        }
+
+        .slds-progress__item {
+            display: flex;
+            align-items: center;
+        }
+
+        .slds-progress__marker {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: var(--slds-g-radius-border-circle);
+            background-color: var(--slds-g-color-neutral-base-90);
+            color: var(--slds-g-color-neutral-base-50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--slds-g-font-size-4);
+            font-weight: var(--slds-g-font-weight-bold);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .slds-progress__marker.slds-is-active {
+            background-color: var(--slds-g-color-brand-base-50);
+            color: var(--slds-g-color-neutral-base-100);
+            box-shadow: 0 0 0 4px rgba(1, 118, 211, 0.2);
+        }
+
+        .slds-progress__marker.slds-is-completed {
+            background-color: var(--slds-g-color-success-base-50);
+            color: var(--slds-g-color-neutral-base-100);
+        }
+
+        .slds-progress__marker.slds-is-completed::after {
+            content: '✓';
+            font-size: var(--slds-g-font-size-5);
+        }
+
+        .slds-progress__marker.slds-is-completed span {
+            display: none;
+        }
+
+        .slds-progress__bar {
+            width: 5rem;
+            height: 3px;
+            background-color: var(--slds-g-color-neutral-base-90);
+            margin: 0 var(--slds-g-spacing-3);
+            border-radius: 2px;
+            transition: background-color 0.3s;
+        }
+
+        .slds-progress__bar.slds-is-completed {
+            background-color: var(--slds-g-color-success-base-50);
+        }
+
+        /* Card Component */
+        .slds-card {
+            background: var(--slds-g-color-neutral-base-100);
+            border-radius: var(--slds-g-radius-border-3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+            margin-bottom: var(--slds-g-spacing-6);
+            overflow: hidden;
+        }
+
+        .slds-card__header {
+            padding: var(--slds-g-spacing-5) var(--slds-g-spacing-6);
+            border-bottom: 1px solid var(--slds-g-color-neutral-base-90);
+            background: linear-gradient(to right, rgba(1,118,211,0.04), transparent);
+            display: flex;
+            align-items: center;
+            gap: var(--slds-g-spacing-3);
+        }
+
+        .slds-card__header::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 1.5rem;
+            background: var(--slds-g-color-brand-base-50);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .slds-card__header-title {
+            font-size: var(--slds-g-font-size-7);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-neutral-base-10);
+        }
+
+        .slds-card__body {
+            padding: var(--slds-g-spacing-6);
+        }
+
+        .slds-card__footer {
+            padding: var(--slds-g-spacing-4) var(--slds-g-spacing-6);
+            border-top: 1px solid var(--slds-g-color-neutral-base-90);
+            background: var(--slds-g-color-neutral-base-95);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--slds-g-spacing-3);
+        }
+
+        /* Grid */
+        .slds-grid {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .slds-grid_pull-padded {
+            margin-left: calc(var(--slds-g-spacing-3) * -1);
+            margin-right: calc(var(--slds-g-spacing-3) * -1);
+        }
+
+        .slds-col {
+            padding: 0 var(--slds-g-spacing-3);
+        }
+
+        .slds-size_1-of-2 {
+            width: 50%;
+        }
+
+        .slds-size_1-of-1 {
+            width: 100%;
+        }
+
+        @media (max-width: 640px) {
+            .slds-size_1-of-2 {
+                width: 100%;
+            }
+        }
+
+        /* Checkbox Tile */
+        .slds-checkbox-tile {
+            display: block;
+            padding: var(--slds-g-spacing-4);
+            background: var(--slds-g-color-neutral-base-100);
+            border: 1.5px solid var(--slds-g-color-neutral-base-90);
+            border-radius: var(--slds-g-radius-border-2);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: var(--slds-g-spacing-3);
+            box-shadow: var(--slds-g-shadow-1);
+        }
+
+        .slds-checkbox-tile:hover {
+            border-color: var(--slds-g-color-brand-base-60);
+            background: rgba(1, 118, 211, 0.03);
+            box-shadow: var(--slds-g-shadow-2);
+            transform: translateY(-1px);
+        }
+
+        .slds-checkbox-tile.slds-is-selected {
+            border-color: var(--slds-g-color-brand-base-50);
+            background: rgba(1, 118, 211, 0.06);
+            box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.12);
+        }
+
+        .slds-checkbox-tile input[type="checkbox"],
+        .slds-checkbox-tile input[type="radio"] {
+            display: none;
+        }
+
+        .slds-checkbox-tile__content {
+            display: flex;
+            align-items: center;
+        }
+
+        .slds-checkbox-tile__indicator {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid var(--slds-g-color-border-base-1);
+            border-radius: var(--slds-g-radius-border-1);
+            margin-right: var(--slds-g-spacing-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .slds-checkbox-tile.slds-is-selected .slds-checkbox-tile__indicator {
+            background-color: var(--slds-g-color-brand-base-50);
+            border-color: var(--slds-g-color-brand-base-50);
+        }
+
+        .slds-checkbox-tile__indicator::after {
+            content: '✓';
+            color: var(--slds-g-color-neutral-base-100);
+            font-size: var(--slds-g-font-size-2);
+            font-weight: var(--slds-g-font-weight-bold);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .slds-checkbox-tile.slds-is-selected .slds-checkbox-tile__indicator::after {
+            opacity: 1;
+        }
+
+        .slds-checkbox-tile__label {
+            font-size: var(--slds-g-font-size-4);
+            color: var(--slds-g-color-neutral-base-20);
+        }
+
+        /* Section Header */
+        .slds-section-title {
+            font-size: var(--slds-g-font-size-5);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-brand-base-50);
+            margin-bottom: var(--slds-g-spacing-4);
+            padding-bottom: var(--slds-g-spacing-2);
+            border-bottom: 2px solid var(--slds-g-color-brand-base-50);
+            display: inline-block;
+        }
+
+        /* Callout/Alert Box */
+        .slds-callout {
+            background: #fffaed;
+            border: 1px solid var(--slds-g-color-warning-base-50);
+            border-left: 4px solid var(--slds-g-color-warning-base-50);
+            border-radius: var(--slds-g-radius-border-2);
+            padding: var(--slds-g-spacing-5);
+            margin-bottom: var(--slds-g-spacing-6);
+        }
+
+        .slds-callout__header {
+            display: flex;
+            align-items: center;
+            gap: var(--slds-g-spacing-2);
+            margin-bottom: var(--slds-g-spacing-3);
+        }
+
+        .slds-callout__icon {
+            font-size: var(--slds-g-font-size-6);
+        }
+
+        .slds-callout__title {
+            font-size: var(--slds-g-font-size-5);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-neutral-base-10);
+        }
+
+        .slds-callout__body {
+            font-size: var(--slds-g-font-size-4);
+            color: var(--slds-g-color-neutral-base-30);
+            line-height: var(--slds-g-line-height-body);
+        }
+
+        .slds-callout__body ul {
+            margin-top: var(--slds-g-spacing-3);
+            padding-left: var(--slds-g-spacing-5);
+        }
+
+        .slds-callout__body li {
+            margin-bottom: var(--slds-g-spacing-2);
+        }
+
+        .slds-callout__body strong {
+            color: var(--slds-g-color-neutral-base-10);
+        }
+
+        /* Volume Section */
+        .slds-volume-section {
+            background: linear-gradient(to right, rgba(1,118,211,0.03), var(--slds-g-color-neutral-base-95));
+            border-radius: var(--slds-g-radius-border-2);
+            padding: var(--slds-g-spacing-5);
+            margin-bottom: var(--slds-g-spacing-5);
+            border-left: 4px solid var(--slds-g-color-brand-base-50);
+            box-shadow: var(--slds-g-shadow-1);
+        }
+
+        .slds-volume-section__title {
+            font-size: var(--slds-g-font-size-5);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-neutral-base-10);
+            margin-bottom: var(--slds-g-spacing-4);
+            display: flex;
+            align-items: center;
+            gap: var(--slds-g-spacing-2);
+        }
+
+        /* Summary Tiles */
+        .slds-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--slds-g-spacing-4);
+            margin-bottom: var(--slds-g-spacing-6);
+        }
+
+        .slds-summary-tile {
+            background: var(--slds-g-color-neutral-base-100);
+            padding: var(--slds-g-spacing-4) var(--slds-g-spacing-5);
+            border-radius: var(--slds-g-radius-border-2);
+            border-top: 3px solid var(--slds-g-color-brand-base-50);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+        }
+
+        .slds-summary-tile__label {
+            font-size: var(--slds-g-font-size-2);
+            color: var(--slds-g-color-neutral-base-50);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: var(--slds-g-spacing-2);
+            font-weight: var(--slds-g-font-weight-bold);
+        }
+
+        .slds-summary-tile__value {
+            font-size: var(--slds-g-font-size-6);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-neutral-base-10);
+        }
+
+        /* Data Table */
+        .slds-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: var(--slds-g-radius-border-2);
+            overflow: hidden;
+            box-shadow: var(--slds-g-shadow-1);
+        }
+
+        .slds-table th {
+            background: linear-gradient(to right, #032d60, #0176d3);
+            padding: var(--slds-g-spacing-4);
+            text-align: left;
+            font-size: var(--slds-g-font-size-3);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: rgba(255,255,255,0.9);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: none;
+        }
+
+        .slds-table td {
+            padding: var(--slds-g-spacing-4);
+            border-bottom: 1px solid var(--slds-g-color-neutral-base-90);
+            vertical-align: top;
+        }
+
+        .slds-table tbody tr:hover {
+            background: rgba(1, 118, 211, 0.03);
+        }
+
+        .slds-table__sku-name {
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-neutral-base-10);
+        }
+
+        .slds-table__sku-quantity {
+            font-size: var(--slds-g-font-size-6);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-brand-base-50);
+        }
+
+        .slds-table__sku-notes {
+            font-size: var(--slds-g-font-size-3);
+            color: var(--slds-g-color-neutral-base-50);
+            max-width: 280px;
+        }
+
+        /* Helper text */
+        .slds-text-color_weak {
+            color: var(--slds-g-color-neutral-base-50);
+        }
+
+        .slds-m-bottom_medium {
+            margin-bottom: var(--slds-g-spacing-5);
+        }
+
+        /* Step visibility */
+        .slds-step-content {
+            display: none;
+        }
+
+        .slds-step-content.slds-is-active {
+            display: block;
+        }
+
+        .slds-hidden {
+            display: none !important;
+        }
+
+        /* Empty state */
+        .slds-empty-state {
+            text-align: center;
+            padding: var(--slds-g-spacing-8);
+            color: var(--slds-g-color-neutral-base-50);
+        }
+
+        /* Responsive table wrapper */
+        .slds-scrollable_x {
+            overflow-x: auto;
+        }
+
+        /* Icon styles */
+        .slds-icon-text {
+            margin-right: var(--slds-g-spacing-2);
+        }
+
+        /* Dynamic entry rows */
+        .slds-entry-row {
+            background: var(--slds-g-color-neutral-base-100);
+            border: 1px solid var(--slds-g-color-neutral-base-90);
+            border-radius: var(--slds-g-radius-border-2);
+            padding: var(--slds-g-spacing-4);
+            margin-bottom: var(--slds-g-spacing-3);
+            box-shadow: var(--slds-g-shadow-1);
+        }
+
+        .slds-entry-row__header {
+            font-size: var(--slds-g-font-size-3);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-brand-base-50);
+            margin-bottom: var(--slds-g-spacing-3);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        /* Landing screen */
+        .slds-landing {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--slds-g-spacing-12) var(--slds-g-spacing-8);
+            text-align: center;
+        }
+
+        .slds-landing__title {
+            font-size: var(--slds-g-font-size-9);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-neutral-base-10);
+            margin-bottom: var(--slds-g-spacing-3);
+        }
+
+        .slds-landing__subtitle {
+            font-size: var(--slds-g-font-size-5);
+            color: var(--slds-g-color-neutral-base-50);
+            margin-bottom: var(--slds-g-spacing-10);
+        }
+
+        .slds-landing__options {
+            display: flex;
+            gap: var(--slds-g-spacing-6);
+            justify-content: center;
+            width: 100%;
+            max-width: 660px;
+        }
+
+        .slds-landing__option {
+            flex: 1;
+            background: var(--slds-g-color-neutral-base-100);
+            border: 1.5px solid var(--slds-g-color-neutral-base-90);
+            border-radius: var(--slds-g-radius-border-3);
+            padding: var(--slds-g-spacing-8) var(--slds-g-spacing-6);
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.25s, transform 0.2s;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slds-landing__option::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0176d3, #1b96ff);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .slds-landing__option:hover {
+            border-color: var(--slds-g-color-brand-base-50);
+            box-shadow: 0 8px 24px rgba(1, 118, 211, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .slds-landing__option:hover::before {
+            opacity: 1;
+        }
+
+        .slds-landing__option-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--slds-g-spacing-4);
+            display: block;
+        }
+
+        .slds-landing__option-title {
+            font-size: var(--slds-g-font-size-6);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-neutral-base-10);
+            margin-bottom: var(--slds-g-spacing-2);
+        }
+
+        .slds-landing__option-desc {
+            font-size: var(--slds-g-font-size-3);
+            color: var(--slds-g-color-neutral-base-50);
+            line-height: var(--slds-g-line-height-body);
+        }
+
+        /* File upload drop zone */
+        .slds-file-drop {
+            border: 2px dashed var(--slds-g-color-neutral-base-80);
+            border-radius: var(--slds-g-radius-border-3);
+            padding: var(--slds-g-spacing-8);
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            margin-top: var(--slds-g-spacing-5);
+        }
+
+        .slds-file-drop:hover,
+        .slds-file-drop.drag-over {
+            border-color: var(--slds-g-color-brand-base-50);
+            background: rgba(1, 118, 211, 0.04);
+        }
+
+        .slds-file-drop__icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: var(--slds-g-spacing-3);
+        }
+
+        .slds-file-drop__label {
+            font-size: var(--slds-g-font-size-4);
+            color: var(--slds-g-color-neutral-base-30);
+            margin-bottom: var(--slds-g-spacing-2);
+        }
+
+        .slds-file-drop__hint {
+            font-size: var(--slds-g-font-size-3);
+            color: var(--slds-g-color-neutral-base-70);
+        }
+
+        .slds-file-loaded {
+            display: flex;
+            align-items: center;
+            gap: var(--slds-g-spacing-3);
+            background: #e8f4fd;
+            border: 1px solid var(--slds-g-color-brand-base-50);
+            border-radius: var(--slds-g-radius-border-2);
+            padding: var(--slds-g-spacing-4);
+            margin-top: var(--slds-g-spacing-5);
+        }
+
+        .slds-file-loaded__name {
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-neutral-base-10);
+            flex: 1;
+        }
+
+        .slds-file-loaded__meta {
+            font-size: var(--slds-g-font-size-3);
+            color: var(--slds-g-color-neutral-base-50);
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Application -->
+    <div class="slds-app-container" id="appContainer">
+        <!-- Page Header -->
+        <div class="slds-page-header">
+            <h1 class="slds-page-header__title">Personalization Scoping Calculator</h1>
+            <p class="slds-page-header__detail">Generate recommended SKUs based on your customer's needs</p>
+        </div>
+
+        <!-- Landing Screen -->
+        <div id="landingScreen">
+            <div class="slds-landing">
+                <h2 class="slds-landing__title">Welcome</h2>
+                <p class="slds-landing__subtitle">Start a new scoping calculator or pick up where you left off.</p>
+                <div class="slds-landing__options">
+                    <div class="slds-landing__option" onclick="startFromScratch()">
+                        <span class="slds-landing__option-icon">✨</span>
+                        <div class="slds-landing__option-title">Start From Scratch</div>
+                        <p class="slds-landing__option-desc">Build a scoping calculator for a new personalization opportunity.</p>
+                    </div>
+                    <div class="slds-landing__option" onclick="showLoadConfig()">
+                        <span class="slds-landing__option-icon">📂</span>
+                        <div class="slds-landing__option-title">Update Existing Calculator</div>
+                        <p class="slds-landing__option-desc">Load an existing calculator's configuration file to review / adjust inputs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load Config Panel -->
+        <div id="loadConfigPanel" class="slds-hidden">
+            <div class="slds-card">
+                <div class="slds-card__header">
+                    <h2 class="slds-card__header-title">Load Existing Calculator</h2>
+                </div>
+                <div class="slds-card__body">
+                    <p class="slds-text-color_weak" style="margin-bottom: var(--slds-g-spacing-4);">Select a <strong>.scopingcalc</strong> config file previously exported from this calculator.</p>
+                    <div class="slds-file-drop" id="fileDropZone" onclick="document.getElementById('configFileInput').click()"
+                         ondragover="event.preventDefault(); this.classList.add('drag-over')"
+                         ondragleave="this.classList.remove('drag-over')"
+                         ondrop="handleFileDrop(event)">
+                        <span class="slds-file-drop__icon">📁</span>
+                        <div class="slds-file-drop__label">Click to browse or drag &amp; drop your file here</div>
+                        <div class="slds-file-drop__hint">.scopingcalc files only</div>
+                    </div>
+                    <input type="file" id="configFileInput" accept=".scopingcalc" class="slds-hidden" onchange="handleFileSelect(event)">
+                    <div id="fileLoadedBanner" class="slds-hidden slds-file-loaded">
+                        <span style="font-size:1.5rem;">✅</span>
+                        <div>
+                            <div class="slds-file-loaded__name" id="fileLoadedName"></div>
+                            <div class="slds-file-loaded__meta" id="fileLoadedMeta"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-card__footer" style="display:flex; gap: var(--slds-g-spacing-3);">
+                    <button class="slds-button slds-button_neutral" onclick="showLanding()">Back</button>
+                    <button class="slds-button slds-button_brand slds-hidden" id="loadConfigBtn" onclick="applyLoadedConfig()">Open Calculator</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calculator Flow (hidden until a path is chosen) -->
+        <div id="calculatorFlow" class="slds-hidden">
+
+        <!-- Progress Indicator -->
+        <div class="slds-progress">
+            <div class="slds-progress__item">
+                <div class="slds-progress__marker slds-is-active" id="stepCircle1"><span>1</span></div>
+            </div>
+            <div class="slds-progress__bar" id="stepLine1"></div>
+            <div class="slds-progress__item">
+                <div class="slds-progress__marker" id="stepCircle2"><span>2</span></div>
+            </div>
+            <div class="slds-progress__bar" id="stepLine2"></div>
+            <div class="slds-progress__item">
+                <div class="slds-progress__marker" id="stepCircle3"><span>3</span></div>
+            </div>
+            <div class="slds-progress__bar" id="stepLine3"></div>
+            <div class="slds-progress__item">
+                <div class="slds-progress__marker" id="stepCircle4"><span>4</span></div>
+            </div>
+        </div>
+
+        <!-- Step 1: Scoping Context -->
+        <div class="slds-step-content slds-is-active" id="step1">
+            <div class="slds-card">
+                <div class="slds-card__header">
+                    <h2 class="slds-card__header-title">Scoping Context</h2>
+                </div>
+                <div class="slds-card__body">
+                    <input type="hidden" id="calculatorTitle">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="customerName">
+                            Customer Name <span class="slds-required">*</span>
+                        </label>
+                        <input type="text" class="slds-input" id="customerName" placeholder="Enter customer name">
+                    </div>
+                    <div class="slds-grid slds-grid_pull-padded">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="contractLength">
+                                    Contract Length (Years) <span class="slds-required">*</span>
+                                </label>
+                                <select class="slds-select" id="contractLength">
+                                    <option value="1" selected>1 Year</option>
+                                    <option value="2">2 Years</option>
+                                    <option value="3">3 Years</option>
+                                    <option value="4">4 Years</option>
+                                    <option value="5">5 Years</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="provisioningRegion">
+                                    Provisioning Region <span class="slds-required">*</span>
+                                </label>
+                                <select class="slds-select" id="provisioningRegion">
+                                    <option value="AMER" selected>AMER</option>
+                                    <option value="EMEA">EMEA</option>
+                                    <option value="APAC">APAC</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Marketing Cloud Personalization: Ownership & Usage -->
+                    <div style="margin-top: var(--slds-g-spacing-6); padding-top: var(--slds-g-spacing-6); border-top: 1px solid var(--slds-g-color-neutral-base-90);">
+                        <h3 style="font-size: var(--slds-g-font-size-6); font-weight: var(--slds-g-font-weight-bold); color: var(--slds-g-color-neutral-base-10); margin-bottom: var(--slds-g-spacing-5);">Marketing Cloud Personalization: Ownership &amp; Usage</h3>
+
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Does the customer own Marketing Cloud Personalization today?</label>
+                            <div class="slds-grid slds-grid_pull-padded" style="margin-top: var(--slds-g-spacing-2);">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <label class="slds-checkbox-tile" data-radio-group="ownsMCP" onclick="toggleRadio(this, 'ownsMCP', true)">
+                                        <input type="radio" name="ownsMCP" id="ownsMCPYes" value="yes">
+                                        <div class="slds-checkbox-tile__content">
+                                            <span class="slds-checkbox-tile__indicator" style="border-radius: 50%;"></span>
+                                            <span class="slds-checkbox-tile__label">Yes</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <label class="slds-checkbox-tile" data-radio-group="ownsMCP" onclick="toggleRadio(this, 'ownsMCP', false)">
+                                        <input type="radio" name="ownsMCP" id="ownsMCPNo" value="no">
+                                        <div class="slds-checkbox-tile__content">
+                                            <span class="slds-checkbox-tile__indicator" style="border-radius: 50%;"></span>
+                                            <span class="slds-checkbox-tile__label">No</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="mcpUsageSection" class="slds-hidden">
+                            <div class="slds-form-element" style="margin-bottom: 0;">
+                                <label class="slds-form-element__label">Is the customer actively using Marketing Cloud Personalization to power personalized experiences?</label>
+                                <div class="slds-grid slds-grid_pull-padded" style="margin-top: var(--slds-g-spacing-2);">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <label class="slds-checkbox-tile" data-radio-group="usesMCP" onclick="toggleRadio(this, 'usesMCP', true)">
+                                            <input type="radio" name="usesMCP" id="usesMCPYes" value="yes">
+                                            <div class="slds-checkbox-tile__content">
+                                                <span class="slds-checkbox-tile__indicator" style="border-radius: 50%;"></span>
+                                                <span class="slds-checkbox-tile__label">Yes</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <label class="slds-checkbox-tile" data-radio-group="usesMCP" onclick="toggleRadio(this, 'usesMCP', false)">
+                                            <input type="radio" name="usesMCP" id="usesMCPNo" value="no">
+                                            <div class="slds-checkbox-tile__content">
+                                                <span class="slds-checkbox-tile__indicator" style="border-radius: 50%;"></span>
+                                                <span class="slds-checkbox-tile__label">No</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-card__footer">
+                    <button class="slds-button slds-button_neutral" onclick="showLanding()">Back</button>
+                    <button class="slds-button slds-button_brand" onclick="nextStep(1)">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Channel Scoping -->
+        <div class="slds-step-content" id="step2">
+            <div class="slds-card">
+                <div class="slds-card__header">
+                    <h2 class="slds-card__header-title">Channel Scoping</h2>
+                </div>
+                <div class="slds-card__body">
+                    <p class="slds-text-color_weak slds-m-bottom_medium">Select the channels you want to personalize:</p>
+
+                    <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" id="channelWeb" value="web">
+                        <div class="slds-checkbox-tile__content">
+                            <span class="slds-checkbox-tile__indicator"></span>
+                            <span class="slds-checkbox-tile__label">Web</span>
+                        </div>
+                    </label>
+
+                    <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" id="channelMobile" value="mobile">
+                        <div class="slds-checkbox-tile__content">
+                            <span class="slds-checkbox-tile__indicator"></span>
+                            <span class="slds-checkbox-tile__label">Mobile App</span>
+                        </div>
+                    </label>
+
+                    <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" id="channelMCE" value="mce">
+                        <div class="slds-checkbox-tile__content">
+                            <span class="slds-checkbox-tile__indicator"></span>
+                            <span class="slds-checkbox-tile__label">Marketing Cloud Engagement (Email + Messaging)</span>
+                        </div>
+                    </label>
+
+                    <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" id="channelMCA" value="mca">
+                        <div class="slds-checkbox-tile__content">
+                            <span class="slds-checkbox-tile__indicator"></span>
+                            <span class="slds-checkbox-tile__label">Marketing Cloud Advanced (Email Recommendations)</span>
+                        </div>
+                    </label>
+
+                    <label class="slds-checkbox-tile" onclick="toggleCheckbox(this, 'retail')">
+                        <input type="checkbox" id="channelRetail" value="retail">
+                        <div class="slds-checkbox-tile__content">
+                            <span class="slds-checkbox-tile__indicator"></span>
+                            <span class="slds-checkbox-tile__label">Retail Triggers</span>
+                        </div>
+                    </label>
+
+                    <!-- Retail Triggers Selection (shown when Retail Triggers is checked) -->
+                    <div id="retailTriggersSection" class="slds-hidden" style="margin-left: 2rem; margin-top: 0.5rem; padding: 1rem; background: var(--slds-g-color-neutral-base-95); border-radius: var(--slds-g-radius-border-2); border-left: 3px solid var(--slds-g-color-brand-base-50);">
+                        <p class="slds-form-element__label" style="margin-bottom: 0.75rem;">Select the triggers you're interested in:</p>
+
+                        <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)" style="margin-bottom: 0.5rem;">
+                            <input type="checkbox" id="triggerPriceDrop" value="priceDrop">
+                            <div class="slds-checkbox-tile__content">
+                                <span class="slds-checkbox-tile__indicator"></span>
+                                <span class="slds-checkbox-tile__label">Price Drop</span>
+                            </div>
+                        </label>
+
+                        <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)" style="margin-bottom: 0.5rem;">
+                            <input type="checkbox" id="triggerBackInStock" value="backInStock">
+                            <div class="slds-checkbox-tile__content">
+                                <span class="slds-checkbox-tile__indicator"></span>
+                                <span class="slds-checkbox-tile__label">Back in Stock</span>
+                            </div>
+                        </label>
+
+                        <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)" style="margin-bottom: 0.5rem;">
+                            <input type="checkbox" id="triggerLowInventory" value="lowInventory">
+                            <div class="slds-checkbox-tile__content">
+                                <span class="slds-checkbox-tile__indicator"></span>
+                                <span class="slds-checkbox-tile__label">Low Inventory</span>
+                            </div>
+                        </label>
+
+                        <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)" style="margin-bottom: 0.5rem;">
+                            <input type="checkbox" id="triggerCartAbandonment" value="cartAbandonment">
+                            <div class="slds-checkbox-tile__content">
+                                <span class="slds-checkbox-tile__indicator"></span>
+                                <span class="slds-checkbox-tile__label">Cart Abandonment</span>
+                            </div>
+                        </label>
+
+                        <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)" style="margin-bottom: 0.5rem;">
+                            <input type="checkbox" id="triggerBrowseAbandonment" value="browseAbandonment">
+                            <div class="slds-checkbox-tile__content">
+                                <span class="slds-checkbox-tile__indicator"></span>
+                                <span class="slds-checkbox-tile__label">Browse Abandonment</span>
+                            </div>
+                        </label>
+
+                        <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)" style="margin-bottom: 0.5rem;">
+                            <input type="checkbox" id="triggerPageAbandon" value="pageAbandon">
+                            <div class="slds-checkbox-tile__content">
+                                <span class="slds-checkbox-tile__indicator"></span>
+                                <span class="slds-checkbox-tile__label">Page Abandon</span>
+                            </div>
+                        </label>
+
+                        <label class="slds-checkbox-tile" onclick="toggleCheckbox(this)" style="margin-bottom: 0.5rem;">
+                            <input type="checkbox" id="triggerNewItem" value="newItem">
+                            <div class="slds-checkbox-tile__content">
+                                <span class="slds-checkbox-tile__indicator"></span>
+                                <span class="slds-checkbox-tile__label">New Item in High Interest Category</span>
+                            </div>
+                        </label>
+
+                        <label class="slds-checkbox-tile" onclick="toggleCheckbox(this, 'other')" style="margin-bottom: 0.5rem;">
+                            <input type="checkbox" id="triggerOther" value="other">
+                            <div class="slds-checkbox-tile__content">
+                                <span class="slds-checkbox-tile__indicator"></span>
+                                <span class="slds-checkbox-tile__label">Other</span>
+                            </div>
+                        </label>
+
+                        <div id="otherTriggerSection" class="slds-hidden" style="margin-top: 0.75rem;">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="otherTriggerDescription">Describe the use case</label>
+                                <input type="text" class="slds-input" id="otherTriggerDescription" placeholder="Enter use case description">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-card__footer">
+                    <button class="slds-button slds-button_neutral" onclick="prevStep(2)">Back</button>
+                    <button class="slds-button slds-button_brand" onclick="nextStep(2)">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Channel Volumes -->
+        <div class="slds-step-content" id="step3">
+            <div class="slds-card">
+                <div class="slds-card__header">
+                    <h2 class="slds-card__header-title">Channel Volumes</h2>
+                </div>
+                <div class="slds-card__body">
+                    <div id="noChannelsMessage" class="slds-empty-state slds-hidden">
+                        <p>Please go back and select at least one channel to configure volumes.</p>
+                    </div>
+
+                    <!-- Web Volume Section -->
+                    <div id="webVolumeSection" class="slds-volume-section slds-hidden">
+                        <h4 class="slds-volume-section__title">
+                            <span class="slds-icon-text">🌐</span> Web Personalization
+                        </h4>
+                        <p class="slds-text-color_weak" style="margin-bottom: 1rem; font-size: 0.8125rem;">To help estimate the number of personalization credits required for decisioning, we need to understand the number of websites where personalization will be applied and the associated MUVs for each website. We currently use the following formula to estimate the number of decision credits required per MUV on each site: <strong>Personalization Credits = MUVs × 8 Decisions Per MUV × 12 Months × Contract Length</strong>.</p>
+
+                        <div class="slds-form-element" style="margin-bottom: 1.5rem;">
+                            <label class="slds-form-element__label" for="numDomains">Number of Unique Website Domains</label>
+                            <input type="number" class="slds-input" id="numDomains" value="1" min="1" onchange="updateDomainInputs()">
+                        </div>
+
+                        <div id="domainInputsContainer">
+                            <!-- Dynamic domain inputs will be added here -->
+                        </div>
+                    </div>
+
+                    <!-- Mobile Volume Section -->
+                    <div id="mobileVolumeSection" class="slds-volume-section slds-hidden">
+                        <h4 class="slds-volume-section__title">
+                            <span class="slds-icon-text">📱</span> Mobile App Personalization
+                        </h4>
+                        <p class="slds-text-color_weak" style="margin-bottom: 1rem; font-size: 0.8125rem;">Similar to the above, in order to scope the number of credits necessary to power mobile app personalization we need to understand the number of mobile apps requiring personalization and their associated Monthly Active User Counts. The same formula from web is applied for credit estimation.</p>
+
+                        <div class="slds-form-element" style="margin-bottom: 1.5rem;">
+                            <label class="slds-form-element__label" for="numMobileApps">Number of Mobile Apps</label>
+                            <input type="number" class="slds-input" id="numMobileApps" value="1" min="1" onchange="updateMobileAppInputs()">
+                        </div>
+
+                        <div id="mobileAppInputsContainer">
+                            <!-- Dynamic mobile app inputs will be added here -->
+                        </div>
+                    </div>
+
+                    <!-- Email Volume Section -->
+                    <div id="emailVolumeSection" class="slds-volume-section slds-hidden">
+                        <h4 class="slds-volume-section__title">
+                            <span class="slds-icon-text">📧</span> Email Personalization
+                        </h4>
+                        <p class="slds-text-color_weak" style="margin-bottom: 1rem; font-size: 0.8125rem;">For customers that are leveraging Marketing Cloud Advanced, Personalization recommenders are available for use to power individualized recommendations in email. To estimate the amount of credits required, we need to understand the approximate number of emails sent per month that contain recommendations. The formula we use to estimate the number of credits required is the following: <strong>Personalization Credits = Number of Monthly Emails × % of Emails Using Recommendations × 1.25 × 12 Months × Contract Length</strong>.</p>
+
+                        <div class="slds-grid slds-grid_pull-padded">
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="monthlyEmails">Monthly Emails Sent (Batch & Triggered)</label>
+                                    <input type="number" class="slds-input" id="monthlyEmails" placeholder="e.g., 1000000">
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="emailPersonalizationPercent">% of Emails with Personalized Recommendations</label>
+                                    <input type="number" class="slds-input" id="emailPersonalizationPercent" placeholder="e.g., 33" min="0" max="100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Retail Triggers Volume Section -->
+                    <div id="retailVolumeSection" class="slds-volume-section slds-hidden">
+                        <h4 class="slds-volume-section__title">
+                            <span class="slds-icon-text">🛒</span> Retail Triggers
+                        </h4>
+                        <p class="slds-text-color_weak" style="margin-bottom: 1rem; font-size: 0.8125rem;">Based on the desire to execute a set of retail triggers, the MCP+ SKU is a potential option. In order to include this SKU, we need to understand the number of named profiles (contacts) the customer has across brands / domains to generate an accurate BOM recommendation.</p>
+
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="numContacts">Number of Contacts</label>
+                            <input type="number" class="slds-input" id="numContacts" placeholder="e.g., 1100000">
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-card__footer">
+                    <button class="slds-button slds-button_neutral" onclick="prevStep(3)">Back</button>
+                    <button class="slds-button slds-button_brand" onclick="generateSKUs()">Generate Recommended SKUs</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Results -->
+        <div class="slds-step-content" id="step4">
+            <div class="slds-card">
+                <div class="slds-card__header">
+                    <h2 class="slds-card__header-title">Recommended SKUs</h2>
+                </div>
+                <div class="slds-card__body">
+                    <!-- Summary Section -->
+                    <h3 class="slds-section-title">Scoping Summary</h3>
+                    <div class="slds-summary-grid" id="summaryGrid">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- SKU Table -->
+                    <h3 class="slds-section-title">Recommended SKUs & Quantities</h3>
+                    <div class="slds-scrollable_x">
+                        <table class="slds-table">
+                            <thead>
+                                <tr>
+                                    <th>SKU Name</th>
+                                    <th>Quantity</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="skuTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Outbound Only Callout -->
+                    <div class="slds-callout slds-hidden" id="outboundOnlyCallout" style="background: #e8f4fd; border-color: var(--slds-g-color-brand-base-50); margin-top: var(--slds-g-spacing-6);">
+                        <div class="slds-callout__header">
+                            <span class="slds-callout__icon">ℹ️</span>
+                            <span class="slds-callout__title">Outbound Channels Only</span>
+                        </div>
+                        <div class="slds-callout__body">
+                            <p>Based on selecting exclusively outbound channels, the Personalization base SKU is not required. If the customer wants to execute personalization on the web or mobile app, please update the channels selected on the 2nd step of the scoping calculator.</p>
+                        </div>
+                    </div>
+
+                    <!-- Data Cloud Prerequisite Callout -->
+                    <div class="slds-callout slds-hidden" id="dataCloudCallout" style="margin-top: var(--slds-g-spacing-6);">
+                        <div class="slds-callout__header">
+                            <span class="slds-callout__icon">⚠️</span>
+                            <span class="slds-callout__title">Data Cloud Prerequisite for Salesforce Personalization</span>
+                        </div>
+                        <div class="slds-callout__body">
+                            <p>To leverage Salesforce Personalization for web and/or mobile app personalization, the customer must own one of the following Data Cloud entitlement combinations:</p>
+                            <ul>
+                                <li><strong>Option 1:</strong> Data Services Credits + Sub-Second Real-Time Profiles</li>
+                                <li><strong>Option 2:</strong> D360 Profiles + Flex Credits (for Real-Time event consumption)</li>
+                            </ul>
+                            <p style="margin-top: 12px;">Please ensure the customer has the appropriate Data Cloud entitlements before finalizing this quote. Data Cloud scoping guidance and materials are available in the <strong>#help-grow-real-time-data-cloud</strong> Slack channel canvas.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-card__footer">
+                    <button class="slds-button slds-button_neutral" onclick="prevStep(4)">Back to Edit</button>
+                    <button class="slds-button slds-button_neutral" onclick="exportConfig()">Export Config File</button>
+                    <button class="slds-button slds-button_neutral" onclick="startOver()">Start New Calculation</button>
+                </div>
+            </div>
+        </div>
+
+        </div><!-- end #calculatorFlow -->
+    </div>
+
+    <script>
+        // Toggle radio-style yes/no tiles
+        function toggleRadio(item, groupName, isYes) {
+            // Deselect all tiles in this group
+            document.querySelectorAll(`[data-radio-group="${groupName}"]`).forEach(tile => {
+                tile.classList.remove('slds-is-selected');
+                tile.querySelector('input').checked = false;
+            });
+            // Select clicked tile
+            item.classList.add('slds-is-selected');
+            item.querySelector('input').checked = true;
+
+            if (groupName === 'ownsMCP') {
+                document.getElementById('mcpUsageSection').classList.toggle('slds-hidden', !isYes);
+                if (!isYes) {
+                    // Reset usage question when ownership is set to No
+                    document.querySelectorAll('[data-radio-group="usesMCP"]').forEach(tile => {
+                        tile.classList.remove('slds-is-selected');
+                        tile.querySelector('input').checked = false;
+                    });
+                }
+            }
+        }
+
+        // Returns true if MCP+ SKUs should always be recommended
+        function isMCPActivelyUsed() {
+            return document.getElementById('usesMCPYes')?.checked === true;
+        }
+
+        // Toggle checkbox styling
+        function toggleCheckbox(item, special) {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            item.classList.toggle('slds-is-selected', checkbox.checked);
+
+            // Handle special cases
+            if (special === 'retail') {
+                document.getElementById('retailTriggersSection').classList.toggle('slds-hidden', !checkbox.checked);
+            }
+            if (special === 'other') {
+                document.getElementById('otherTriggerSection').classList.toggle('slds-hidden', !checkbox.checked);
+            }
+        }
+
+        // Dynamic domain inputs — preserves existing values when re-rendering
+        function updateDomainInputs() {
+            const numDomains = parseInt(document.getElementById('numDomains').value) || 1;
+            const container = document.getElementById('domainInputsContainer');
+
+            // Snapshot existing values before wiping DOM
+            const existing = {};
+            container.querySelectorAll('input').forEach(el => { existing[el.id] = el.value; });
+
+            let html = '';
+            for (let i = 1; i <= numDomains; i++) {
+                html += `
+                    <div class="slds-entry-row">
+                        <div class="slds-entry-row__header">Website ${i}</div>
+                        <div class="slds-grid slds-grid_pull-padded">
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="domainName${i}">Domain Name or URL</label>
+                                    <input type="text" class="slds-input domain-name" id="domainName${i}" placeholder="e.g., www.example.com">
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="domainMUV${i}">Monthly Unique Visitors</label>
+                                    <input type="number" class="slds-input domain-muv" id="domainMUV${i}" placeholder="e.g., 4000000">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+
+            // Restore snapshotted values
+            Object.entries(existing).forEach(([id, val]) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            });
+        }
+
+        // Dynamic mobile app inputs — preserves existing values when re-rendering
+        function updateMobileAppInputs() {
+            const numApps = parseInt(document.getElementById('numMobileApps').value) || 1;
+            const container = document.getElementById('mobileAppInputsContainer');
+
+            // Snapshot existing values before wiping DOM
+            const existing = {};
+            container.querySelectorAll('input').forEach(el => { existing[el.id] = el.value; });
+
+            let html = '';
+            for (let i = 1; i <= numApps; i++) {
+                html += `
+                    <div class="slds-entry-row">
+                        <div class="slds-entry-row__header">Mobile App ${i}</div>
+                        <div class="slds-grid slds-grid_pull-padded">
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="appName${i}">Mobile App Name</label>
+                                    <input type="text" class="slds-input app-name" id="appName${i}" placeholder="e.g., MyApp iOS">
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="appMAU${i}">Monthly Active Users</label>
+                                    <input type="number" class="slds-input app-mau" id="appMAU${i}" placeholder="e.g., 4000000">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+
+            // Restore snapshotted values
+            Object.entries(existing).forEach(([id, val]) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            });
+        }
+
+        // Get total web MUVs from all domains
+        function getTotalWebMUVs() {
+            let total = 0;
+            document.querySelectorAll('.domain-muv').forEach(input => {
+                total += parseInt(input.value) || 0;
+            });
+            return total;
+        }
+
+        // Get total mobile MAUs from all apps
+        function getTotalMobileMAUs() {
+            let total = 0;
+            document.querySelectorAll('.app-mau').forEach(input => {
+                total += parseInt(input.value) || 0;
+            });
+            return total;
+        }
+
+        // Get selected retail triggers
+        function getSelectedRetailTriggers() {
+            const triggers = [];
+            if (document.getElementById('triggerPriceDrop')?.checked) triggers.push('Price Drop');
+            if (document.getElementById('triggerBackInStock')?.checked) triggers.push('Back in Stock');
+            if (document.getElementById('triggerLowInventory')?.checked) triggers.push('Low Inventory');
+            if (document.getElementById('triggerCartAbandonment')?.checked) triggers.push('Cart Abandonment');
+            if (document.getElementById('triggerBrowseAbandonment')?.checked) triggers.push('Browse Abandonment');
+            if (document.getElementById('triggerPageAbandon')?.checked) triggers.push('Page Abandon');
+            if (document.getElementById('triggerNewItem')?.checked) triggers.push('New Item in High Interest Category');
+            if (document.getElementById('triggerOther')?.checked) {
+                const otherDesc = document.getElementById('otherTriggerDescription')?.value || 'Other';
+                triggers.push(`Other: ${otherDesc}`);
+            }
+            return triggers;
+        }
+
+        // Step navigation
+        function nextStep(currentStep) {
+            if (!validateStep(currentStep)) return;
+
+            document.getElementById(`step${currentStep}`).classList.remove('slds-is-active');
+            document.getElementById(`step${currentStep + 1}`).classList.add('slds-is-active');
+
+            document.getElementById(`stepCircle${currentStep}`).classList.remove('slds-is-active');
+            document.getElementById(`stepCircle${currentStep}`).classList.add('slds-is-completed');
+            document.getElementById(`stepLine${currentStep}`).classList.add('slds-is-completed');
+            document.getElementById(`stepCircle${currentStep + 1}`).classList.add('slds-is-active');
+
+            if (currentStep === 2) {
+                updateVolumeFields();
+            }
+        }
+
+        function prevStep(currentStep) {
+            document.getElementById(`step${currentStep}`).classList.remove('slds-is-active');
+            document.getElementById(`step${currentStep - 1}`).classList.add('slds-is-active');
+
+            document.getElementById(`stepCircle${currentStep}`).classList.remove('slds-is-active');
+            document.getElementById(`stepCircle${currentStep - 1}`).classList.remove('slds-is-completed');
+            document.getElementById(`stepCircle${currentStep - 1}`).classList.add('slds-is-active');
+            document.getElementById(`stepLine${currentStep - 1}`).classList.remove('slds-is-completed');
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                const customerName = document.getElementById('customerName').value.trim();
+                if (!customerName) {
+                    alert('Please enter the customer name.');
+                    return false;
+                }
+            }
+            if (step === 2) {
+                const channels = getSelectedChannels();
+                if (channels.length === 0) {
+                    alert('Please select at least one channel.');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function getSelectedChannels() {
+            const channels = [];
+            if (document.getElementById('channelWeb').checked) channels.push('web');
+            if (document.getElementById('channelMobile').checked) channels.push('mobile');
+            if (document.getElementById('channelMCE').checked) channels.push('mce');
+            if (document.getElementById('channelMCA').checked) channels.push('mca');
+            if (document.getElementById('channelRetail').checked) channels.push('retail');
+            return channels;
+        }
+
+        function updateVolumeFields() {
+            const channels = getSelectedChannels();
+
+            // Check if we have any channels that need volume inputs
+            const hasVolumeChannels = channels.includes('web') || channels.includes('mobile') ||
+                                       channels.includes('mce') || channels.includes('mca') ||
+                                       channels.includes('retail');
+
+            document.getElementById('noChannelsMessage').classList.toggle('slds-hidden', hasVolumeChannels);
+
+            // Web section
+            const showWeb = channels.includes('web');
+            document.getElementById('webVolumeSection').classList.toggle('slds-hidden', !showWeb);
+            if (showWeb) {
+                updateDomainInputs();
+            }
+
+            // Mobile section
+            const showMobile = channels.includes('mobile');
+            document.getElementById('mobileVolumeSection').classList.toggle('slds-hidden', !showMobile);
+            if (showMobile) {
+                updateMobileAppInputs();
+            }
+
+            // Email section
+            document.getElementById('emailVolumeSection').classList.toggle('slds-hidden',
+                !channels.includes('mce') && !channels.includes('mca'));
+
+            // Retail triggers section
+            document.getElementById('retailVolumeSection').classList.toggle('slds-hidden',
+                !channels.includes('retail'));
+        }
+
+        function generateSKUs() {
+            document.getElementById('step3').classList.remove('slds-is-active');
+            document.getElementById('step4').classList.add('slds-is-active');
+
+            document.getElementById('stepCircle3').classList.remove('slds-is-active');
+            document.getElementById('stepCircle3').classList.add('slds-is-completed');
+            document.getElementById('stepLine3').classList.add('slds-is-completed');
+            document.getElementById('stepCircle4').classList.add('slds-is-active');
+
+            populateSummary();
+            calculateSKUs();
+        }
+
+        function populateSummary() {
+            const channels = getSelectedChannels();
+            const channelNames = {
+                'web': 'Web',
+                'mobile': 'Mobile App',
+                'mce': 'Marketing Cloud Engagement',
+                'mca': 'Marketing Cloud Advanced (Email Recommendations)',
+                'retail': 'Retail Triggers'
+            };
+
+            const calculatorTitle = document.getElementById('calculatorTitle').value;
+            let summaryHTML = `
+                <div class="slds-summary-tile">
+                    <div class="slds-summary-tile__label">Customer Name</div>
+                    <div class="slds-summary-tile__value">${document.getElementById('customerName').value}</div>
+                </div>
+                <div class="slds-summary-tile">
+                    <div class="slds-summary-tile__label">Contract Length</div>
+                    <div class="slds-summary-tile__value">${document.getElementById('contractLength').value} Year(s)</div>
+                </div>
+                <div class="slds-summary-tile">
+                    <div class="slds-summary-tile__label">Provisioning Region</div>
+                    <div class="slds-summary-tile__value">${document.getElementById('provisioningRegion').value}</div>
+                </div>
+                <div class="slds-summary-tile">
+                    <div class="slds-summary-tile__label">Selected Channels</div>
+                    <div class="slds-summary-tile__value">${channels.map(c => channelNames[c]).join(', ')}</div>
+                </div>
+            `;
+
+            if (channels.includes('web')) {
+                const domains = document.getElementById('numDomains').value || 1;
+                const totalWebMUVs = getTotalWebMUVs();
+                summaryHTML += `
+                    <div class="slds-summary-tile">
+                        <div class="slds-summary-tile__label">Web Domains</div>
+                        <div class="slds-summary-tile__value">${domains}</div>
+                    </div>
+                    <div class="slds-summary-tile">
+                        <div class="slds-summary-tile__label">Total Monthly Web Visitors</div>
+                        <div class="slds-summary-tile__value">${totalWebMUVs.toLocaleString()}</div>
+                    </div>
+                `;
+            }
+
+            if (channels.includes('mobile')) {
+                const numApps = document.getElementById('numMobileApps').value || 1;
+                const totalMAU = getTotalMobileMAUs();
+                summaryHTML += `
+                    <div class="slds-summary-tile">
+                        <div class="slds-summary-tile__label">Mobile Apps</div>
+                        <div class="slds-summary-tile__value">${numApps}</div>
+                    </div>
+                    <div class="slds-summary-tile">
+                        <div class="slds-summary-tile__label">Total Mobile MAU</div>
+                        <div class="slds-summary-tile__value">${totalMAU.toLocaleString()}</div>
+                    </div>
+                `;
+            }
+
+            if (channels.includes('mce') || channels.includes('mca')) {
+                const emails = document.getElementById('monthlyEmails').value || 0;
+                const percent = document.getElementById('emailPersonalizationPercent').value || 0;
+                summaryHTML += `
+                    <div class="slds-summary-tile">
+                        <div class="slds-summary-tile__label">Monthly Emails (Batch & Triggered)</div>
+                        <div class="slds-summary-tile__value">${Number(emails).toLocaleString()}</div>
+                    </div>
+                    <div class="slds-summary-tile">
+                        <div class="slds-summary-tile__label">Personalized Email %</div>
+                        <div class="slds-summary-tile__value">${percent}%</div>
+                    </div>
+                `;
+            }
+
+            if (channels.includes('retail')) {
+                const triggers = getSelectedRetailTriggers();
+                const numContacts = document.getElementById('numContacts').value || 0;
+                summaryHTML += `
+                    <div class="slds-summary-tile">
+                        <div class="slds-summary-tile__label">Selected Retail Triggers</div>
+                        <div class="slds-summary-tile__value">${triggers.length > 0 ? triggers.join(', ') : 'None selected'}</div>
+                    </div>
+                    <div class="slds-summary-tile">
+                        <div class="slds-summary-tile__label">Number of Contacts</div>
+                        <div class="slds-summary-tile__value">${Number(numContacts).toLocaleString()}</div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('summaryGrid').innerHTML = summaryHTML;
+        }
+
+        function calculateSKUs() {
+            const channels = getSelectedChannels();
+            const region = document.getElementById('provisioningRegion').value;
+            const contractLength = parseInt(document.getElementById('contractLength').value);
+
+            const skus = [];
+
+            // Get totals from dynamic inputs
+            const totalWebMUVs = getTotalWebMUVs();
+            const totalMobileMAUs = getTotalMobileMAUs();
+            const monthlyEmails = parseInt(document.getElementById('monthlyEmails').value) || 0;
+            const emailPercent = parseInt(document.getElementById('emailPersonalizationPercent').value) || 0;
+
+            const totalMUVs = totalWebMUVs + totalMobileMAUs;
+
+            // Determine which SKU path to use
+            const mcpActivelyUsed = isMCPActivelyUsed();
+            const hasRetailTriggers = channels.includes('retail') || mcpActivelyUsed;
+            const hasWebOrMobile = channels.includes('web') || channels.includes('mobile');
+            const hasOutboundOnly = (channels.includes('mce') || channels.includes('mca')) && !hasWebOrMobile && !hasRetailTriggers;
+
+            if (hasOutboundOnly) {
+                // Outbound only (MCE or MCA without web/mobile/retail): Only Personalization Card
+                const emailCredits = (monthlyEmails > 0 && emailPercent > 0)
+                    ? Math.ceil((monthlyEmails * (emailPercent / 100) * 1.25 * 12 * contractLength) / 1000000) : 0;
+
+                if (emailCredits > 0) {
+                    skus.push({
+                        name: 'Salesforce Personalization Card (1M Credits)',
+                        quantity: emailCredits,
+                        notes: 'The quantity recommended accounts for personalization consumption across all selected channels.'
+                    });
+                }
+            } else if (hasRetailTriggers) {
+                // Retail Triggers path: MCP+ and associated MCP SKUs
+                const numContacts = parseInt(document.getElementById('numContacts').value) || 0;
+
+                skus.push({
+                    name: `Marketing Cloud Personalization+ (${region})`,
+                    quantity: 1,
+                    notes: 'Region specific SKU that grants a customer access to both Salesforce Personalization and Marketing Cloud Personalization. Data Cloud is required to use Salesforce Personalization.'
+                });
+
+                if (totalMUVs > 0) {
+                    const muvUnits = Math.ceil(totalMUVs / 100000);
+                    skus.push({
+                        name: 'Marketing Cloud Personalization - Unique Visitors',
+                        quantity: muvUnits,
+                        notes: 'MUVs / 100,000 - Discount to 100% in order to divert funds to cover either SSRT profiles or RT event ingest via Flex'
+                    });
+                }
+
+                if (numContacts > 0) {
+                    const namedProfiles = Math.ceil(numContacts / 100000);
+                    skus.push({
+                        name: 'Marketing Cloud Personalization - Named Profiles (Premium)',
+                        quantity: namedProfiles,
+                        notes: 'Contacts / 100,000 - Discount to 100% in order to divert funds to cover either SSRT profiles or RT event ingest via Flex'
+                    });
+                }
+
+                // Also include Personalization Card for credit estimation
+                const webCredits = totalWebMUVs > 0 ? Math.ceil((totalWebMUVs * 8 * 12 * contractLength) / 1000000) : 0;
+                const mobileCredits = totalMobileMAUs > 0 ? Math.ceil((totalMobileMAUs * 8 * 12 * contractLength) / 1000000) : 0;
+                const emailCredits = (channels.includes('mca') && monthlyEmails > 0 && emailPercent > 0)
+                    ? Math.ceil((monthlyEmails * (emailPercent / 100) * 1.25 * 12 * contractLength) / 1000000) : 0;
+
+                const totalCredits = webCredits + mobileCredits + emailCredits;
+
+                if (totalCredits > 0) {
+                    skus.push({
+                        name: 'Salesforce Personalization Card (1M Credits)',
+                        quantity: totalCredits,
+                        notes: 'The quantity recommended accounts for personalization consumption across all selected channels.'
+                    });
+                }
+            } else if (hasWebOrMobile) {
+                // Web/Mobile path: Salesforce Personalization + Personalization Card
+                skus.push({
+                    name: 'Salesforce Personalization',
+                    quantity: 1,
+                    notes: 'Base SKU that is required to execute web and mobile app personalization.'
+                });
+
+                // Calculate credits by channel
+                const webCredits = totalWebMUVs > 0 ? Math.ceil((totalWebMUVs * 8 * 12 * contractLength) / 1000000) : 0;
+                const mobileCredits = totalMobileMAUs > 0 ? Math.ceil((totalMobileMAUs * 8 * 12 * contractLength) / 1000000) : 0;
+                const emailCredits = (channels.includes('mca') && monthlyEmails > 0 && emailPercent > 0)
+                    ? Math.ceil((monthlyEmails * (emailPercent / 100) * 1.25 * 12 * contractLength) / 1000000) : 0;
+
+                const totalCredits = webCredits + mobileCredits + emailCredits;
+
+                // Salesforce Personalization SKU includes 50M credits per contract year
+                const includedCredits = 50 * contractLength;
+                const additionalCreditsNeeded = Math.max(0, totalCredits - includedCredits);
+
+                if (additionalCreditsNeeded > 0) {
+                    skus.push({
+                        name: 'Salesforce Personalization Card (1M Credits)',
+                        quantity: additionalCreditsNeeded,
+                        notes: 'The quantity recommended accounts for personalization consumption across all selected channels.'
+                    });
+                } else if (totalCredits > 0) {
+                    // Credits needed but covered by included credits
+                    skus.push({
+                        name: 'Salesforce Personalization Card (1M Credits)',
+                        quantity: 0,
+                        notes: 'The quantity recommended accounts for personalization consumption across all selected channels.'
+                    });
+                }
+            }
+
+            // Show outbound only callout if only MCE/MCA selected (no web, mobile, or retail)
+            document.getElementById('outboundOnlyCallout').classList.toggle('slds-hidden', !hasOutboundOnly);
+
+            // Show Data Cloud callout if web or mobile channels are selected
+            const showDataCloudCallout = channels.includes('web') || channels.includes('mobile');
+            document.getElementById('dataCloudCallout').classList.toggle('slds-hidden', !showDataCloudCallout);
+
+            let tableHTML = '';
+            if (skus.length === 0) {
+                tableHTML = '<tr><td colspan="3" class="slds-empty-state">No SKUs to recommend based on current selections</td></tr>';
+            } else {
+                skus.forEach(sku => {
+                    tableHTML += `
+                        <tr>
+                            <td class="slds-table__sku-name">${sku.name}</td>
+                            <td class="slds-table__sku-quantity">${sku.quantity.toLocaleString()}</td>
+                            <td class="slds-table__sku-notes">${sku.notes}</td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('skuTableBody').innerHTML = tableHTML;
+        }
+
+        function exportToPDF() {
+            const customerName = document.getElementById('customerName').value || 'Customer';
+            const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const channels = getSelectedChannels();
+
+            const hasWebOrMobile = channels.includes('web') || channels.includes('mobile');
+            const hasRetailTriggers = channels.includes('retail') || isMCPActivelyUsed();
+            const hasOutboundOnly = (channels.includes('mce') || channels.includes('mca')) && !hasWebOrMobile && !hasRetailTriggers;
+
+            // Get content from page
+            var summaryHTML = document.getElementById('summaryGrid').innerHTML;
+            var tableHTML = document.getElementById('skuTableBody').innerHTML;
+
+            // Build full HTML document
+            var htmlContent = '<!DOCTYPE html><html><head>';
+            htmlContent += '<meta charset="UTF-8">';
+            htmlContent += '<title>Personalization SKU Report - ' + customerName + '</title>';
+            htmlContent += '<style>';
+            htmlContent += '* { margin: 0; padding: 0; box-sizing: border-box; }';
+            htmlContent += 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #181818; font-size: 13px; line-height: 1.5; }';
+            htmlContent += '.header { text-align: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 3px solid #0176d3; }';
+            htmlContent += '.header h1 { font-size: 24px; color: #0176d3; margin: 0 0 8px 0; }';
+            htmlContent += '.header p { color: #747474; margin: 0; font-size: 14px; }';
+            htmlContent += '.section-title { font-size: 16px; font-weight: 700; color: #0176d3; margin: 24px 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid #0176d3; display: inline-block; }';
+            htmlContent += '.summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 32px; }';
+            htmlContent += '.slds-summary-tile { background: #f3f3f3; padding: 12px; border-radius: 6px; border-left: 4px solid #0176d3; }';
+            htmlContent += '.slds-summary-tile__label { font-size: 10px; color: #747474; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }';
+            htmlContent += '.slds-summary-tile__value { font-size: 14px; font-weight: 700; color: #181818; }';
+            htmlContent += 'table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 24px; }';
+            htmlContent += 'th { background: #f3f3f3; padding: 12px; text-align: left; font-weight: 700; border-bottom: 2px solid #c9c9c9; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }';
+            htmlContent += 'td { padding: 12px; border-bottom: 1px solid #e5e5e5; vertical-align: top; }';
+            htmlContent += '.slds-table__sku-name { font-weight: 700; color: #181818; }';
+            htmlContent += '.slds-table__sku-quantity { font-weight: 700; color: #0176d3; font-size: 16px; }';
+            htmlContent += '.slds-table__sku-notes { font-size: 12px; color: #747474; }';
+            htmlContent += '.callout { border-radius: 6px; padding: 16px; margin-top: 24px; }';
+            htmlContent += '.callout-info { background: #e8f4fd; border: 1px solid #0176d3; border-left: 4px solid #0176d3; }';
+            htmlContent += '.callout-warning { background: #fffaed; border: 1px solid #dd7a01; border-left: 4px solid #dd7a01; }';
+            htmlContent += '.callout-header { margin-bottom: 8px; font-weight: 700; color: #181818; }';
+            htmlContent += '.callout-body { font-size: 13px; color: #444444; }';
+            htmlContent += '.callout-body ul { margin: 12px 0; padding-left: 24px; }';
+            htmlContent += '.callout-body li { margin-bottom: 6px; }';
+            htmlContent += '.footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #e5e5e5; font-size: 11px; color: #747474; text-align: center; }';
+            htmlContent += '@media print { body { padding: 20px; } @page { margin: 0.5in; } }';
+            htmlContent += '</style></head><body>';
+
+            const pdfTitle = document.getElementById('calculatorTitle').value;
+            htmlContent += '<div class="header">';
+            htmlContent += '<h1>Personalization Scoping Calculator</h1>';
+            htmlContent += `<p>${pdfTitle ? pdfTitle + ' — ' : ''}SKU Recommendation Report</p>`;
+            htmlContent += '</div>';
+
+            htmlContent += '<h2 class="section-title">Scoping Summary</h2>';
+            htmlContent += '<div class="summary-grid">' + summaryHTML + '</div>';
+
+            htmlContent += '<h2 class="section-title">Recommended SKUs & Quantities</h2>';
+            htmlContent += '<table><thead><tr><th>SKU Name</th><th>Quantity</th><th>Notes</th></tr></thead>';
+            htmlContent += '<tbody>' + tableHTML + '</tbody></table>';
+
+            // Add callouts
+            if (hasOutboundOnly) {
+                htmlContent += '<div class="callout callout-info">';
+                htmlContent += '<div class="callout-header">ℹ️ Outbound Channels Only</div>';
+                htmlContent += '<div class="callout-body">Based on selecting exclusively outbound channels, the Personalization base SKU is not required. If the customer wants to execute personalization on the web or mobile app, please update the channels selected.</div>';
+                htmlContent += '</div>';
+            }
+
+            if (hasWebOrMobile) {
+                htmlContent += '<div class="callout callout-warning">';
+                htmlContent += '<div class="callout-header">⚠️ Data Cloud Prerequisite for Salesforce Personalization</div>';
+                htmlContent += '<div class="callout-body">';
+                htmlContent += '<p>To leverage Salesforce Personalization for web and/or mobile app personalization, the customer must own one of the following Data Cloud entitlement combinations:</p>';
+                htmlContent += '<ul>';
+                htmlContent += '<li><strong>Option 1:</strong> Data Services Credits + Sub-Second Real-Time Profiles</li>';
+                htmlContent += '<li><strong>Option 2:</strong> D360 Profiles + Flex Credits (for Real-Time event consumption)</li>';
+                htmlContent += '</ul>';
+                htmlContent += '<p>Please ensure the customer has the appropriate Data Cloud entitlements before finalizing this quote. Data Cloud scoping guidance and materials are available in the <strong>#help-grow-real-time-data-cloud</strong> Slack channel canvas.</p>';
+                htmlContent += '</div></div>';
+            }
+
+            htmlContent += '<div class="footer">Generated on ' + date + ' | Personalization Scoping Calculator</div>';
+            htmlContent += '</body></html>';
+
+            // Use Blob and URL to create downloadable PDF via print
+            var printWindow = window.open('', '_blank', 'width=800,height=600');
+            if (!printWindow) {
+                alert('Please allow pop-ups to export the PDF.');
+                return;
+            }
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+
+            // Use setTimeout to ensure content is rendered before printing
+            setTimeout(function() {
+                printWindow.focus();
+                printWindow.print();
+            }, 250);
+        }
+
+        // ── Landing screen ──────────────────────────────────────────────────────
+
+        function showLanding() {
+            document.getElementById('landingScreen').classList.remove('slds-hidden');
+            document.getElementById('loadConfigPanel').classList.add('slds-hidden');
+            document.getElementById('calculatorFlow').classList.add('slds-hidden');
+        }
+
+        function startFromScratch() {
+            document.getElementById('landingScreen').classList.add('slds-hidden');
+            document.getElementById('loadConfigPanel').classList.add('slds-hidden');
+            document.getElementById('calculatorFlow').classList.remove('slds-hidden');
+        }
+
+        function showLoadConfig() {
+            document.getElementById('landingScreen').classList.add('slds-hidden');
+            document.getElementById('calculatorFlow').classList.add('slds-hidden');
+            document.getElementById('loadConfigPanel').classList.remove('slds-hidden');
+            // reset file state
+            document.getElementById('fileLoadedBanner').classList.add('slds-hidden');
+            document.getElementById('loadConfigBtn').classList.add('slds-hidden');
+            document.getElementById('configFileInput').value = '';
+            window._loadedConfig = null;
+        }
+
+        // ── Export config file ───────────────────────────────────────────────
+
+        function exportConfig() {
+            const numDomains = parseInt(document.getElementById('numDomains').value) || 1;
+            const domains = [];
+            for (let i = 1; i <= numDomains; i++) {
+                domains.push({
+                    name: document.getElementById(`domainName${i}`)?.value || '',
+                    muv:  document.getElementById(`domainMUV${i}`)?.value  || ''
+                });
+            }
+
+            const numApps = parseInt(document.getElementById('numMobileApps').value) || 1;
+            const mobileApps = [];
+            for (let i = 1; i <= numApps; i++) {
+                mobileApps.push({
+                    name: document.getElementById(`appName${i}`)?.value || '',
+                    mau:  document.getElementById(`appMAU${i}`)?.value  || ''
+                });
+            }
+
+            const retailTriggers = [];
+            ['triggerAbandoned', 'triggerBack', 'triggerLowStock', 'triggerPrice', 'triggerWishlist', 'triggerHighValue', 'triggerOther'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el?.checked) retailTriggers.push(id);
+            });
+
+            const config = {
+                _version:    1,
+                _savedAt:    new Date().toISOString(),
+                calculatorTitle:            document.getElementById('calculatorTitle').value,
+                customerName:               document.getElementById('customerName').value,
+                contractLength:             document.getElementById('contractLength').value,
+                provisioningRegion:         document.getElementById('provisioningRegion').value,
+                ownsMCP:                    document.getElementById('ownsMCPYes')?.checked ? 'yes' : document.getElementById('ownsMCPNo')?.checked ? 'no' : '',
+                usesMCP:                    document.getElementById('usesMCPYes')?.checked ? 'yes' : document.getElementById('usesMCPNo')?.checked ? 'no' : '',
+                channels: {
+                    web:    document.getElementById('channelWeb').checked,
+                    mobile: document.getElementById('channelMobile').checked,
+                    mce:    document.getElementById('channelMCE').checked,
+                    mca:    document.getElementById('channelMCA').checked,
+                    retail: document.getElementById('channelRetail').checked
+                },
+                numDomains,
+                domains,
+                numMobileApps: numApps,
+                mobileApps,
+                monthlyEmails:              document.getElementById('monthlyEmails').value,
+                emailPersonalizationPercent:document.getElementById('emailPersonalizationPercent').value,
+                numContacts:                document.getElementById('numContacts').value,
+                retailTriggers,
+                otherTriggerDescription:    document.getElementById('otherTriggerDescription')?.value || ''
+            };
+
+            const json     = JSON.stringify(config, null, 2);
+            const blob     = new Blob([json], { type: 'application/json' });
+            const url      = URL.createObjectURL(blob);
+            const ts       = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const safeName = (config.customerName || 'calculator').replace(/[^a-z0-9_\- ]/gi, '_');
+            const a        = document.createElement('a');
+            a.href         = url;
+            a.download     = `${safeName}_${ts}.scopingcalc`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ── Load config file ─────────────────────────────────────────────────
+
+        function handleFileDrop(event) {
+            event.preventDefault();
+            document.getElementById('fileDropZone').classList.remove('drag-over');
+            const file = event.dataTransfer.files[0];
+            if (file) readConfigFile(file);
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) readConfigFile(file);
+        }
+
+        function readConfigFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const config = JSON.parse(e.target.result);
+                    if (!config._version) throw new Error('Not a valid config file.');
+                    window._loadedConfig = config;
+
+                    const savedAt = config._savedAt ? new Date(config._savedAt).toLocaleString('en-US') : 'Unknown date';
+                    document.getElementById('fileLoadedName').textContent = config.calculatorTitle || file.name;
+                    document.getElementById('fileLoadedMeta').textContent = `Saved ${savedAt} · Customer: ${config.customerName || '—'}`;
+                    document.getElementById('fileLoadedBanner').classList.remove('slds-hidden');
+                    document.getElementById('loadConfigBtn').classList.remove('slds-hidden');
+                } catch (err) {
+                    alert('Could not read this file. Please make sure it is a valid .scopingcalc file.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function applyLoadedConfig() {
+            const c = window._loadedConfig;
+            if (!c) return;
+
+            // Show calculator flow first so elements exist in DOM
+            startFromScratch();
+
+            // ── Step 1: context ──────────────────────────────────────────────
+            document.getElementById('calculatorTitle').value    = c.calculatorTitle || '';
+            document.getElementById('customerName').value       = c.customerName    || '';
+            document.getElementById('contractLength').value     = c.contractLength  || '1';
+            document.getElementById('provisioningRegion').value = c.provisioningRegion || 'AMER';
+
+            // MCP ownership
+            ['ownsMCPYes','ownsMCPNo'].forEach(id => {
+                document.getElementById(id).checked = false;
+                document.getElementById(id).closest('.slds-checkbox-tile').classList.remove('slds-is-selected');
+            });
+            if (c.ownsMCP) {
+                const id = c.ownsMCP === 'yes' ? 'ownsMCPYes' : 'ownsMCPNo';
+                document.getElementById(id).checked = true;
+                document.getElementById(id).closest('.slds-checkbox-tile').classList.add('slds-is-selected');
+                document.getElementById('mcpUsageSection').classList.toggle('slds-hidden', c.ownsMCP !== 'yes');
+            }
+
+            // MCP usage
+            ['usesMCPYes','usesMCPNo'].forEach(id => {
+                document.getElementById(id).checked = false;
+                document.getElementById(id).closest('.slds-checkbox-tile').classList.remove('slds-is-selected');
+            });
+            if (c.usesMCP) {
+                const id = c.usesMCP === 'yes' ? 'usesMCPYes' : 'usesMCPNo';
+                document.getElementById(id).checked = true;
+                document.getElementById(id).closest('.slds-checkbox-tile').classList.add('slds-is-selected');
+            }
+
+            // ── Step 2: channels ─────────────────────────────────────────────
+            const channelMap = { web: 'channelWeb', mobile: 'channelMobile', mce: 'channelMCE', mca: 'channelMCA', retail: 'channelRetail' };
+            Object.entries(channelMap).forEach(([key, id]) => {
+                const el   = document.getElementById(id);
+                const tile = el.closest('.slds-checkbox-tile');
+                el.checked = !!(c.channels && c.channels[key]);
+                tile.classList.toggle('slds-is-selected', el.checked);
+            });
+
+            // Retail trigger sub-selections
+            document.getElementById('retailTriggersSection').classList.toggle('slds-hidden', !c.channels?.retail);
+            if (c.channels?.retail) {
+                ['triggerAbandoned','triggerBack','triggerLowStock','triggerPrice','triggerWishlist','triggerHighValue','triggerOther'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    const selected = (c.retailTriggers || []).includes(id);
+                    el.checked = selected;
+                    el.closest('.slds-checkbox-tile').classList.toggle('slds-is-selected', selected);
+                });
+                const hasOther = (c.retailTriggers || []).includes('triggerOther');
+                document.getElementById('otherTriggerSection').classList.toggle('slds-hidden', !hasOther);
+                document.getElementById('otherTriggerDescription').value = c.otherTriggerDescription || '';
+            }
+
+            // ── Step 3: volumes ──────────────────────────────────────────────
+            // Set counts BEFORE calling updateVolumeFields so dynamic rows are built with the right number
+            document.getElementById('numDomains').value    = c.numDomains    || 1;
+            document.getElementById('numMobileApps').value = c.numMobileApps || 1;
+
+            // updateVolumeFields reads channel checkboxes (now set) and calls
+            // updateDomainInputs / updateMobileAppInputs internally
+            updateVolumeFields();
+
+            // Now populate the freshly-rendered domain rows
+            (c.domains || []).forEach((d, i) => {
+                const n = document.getElementById(`domainName${i + 1}`);
+                const m = document.getElementById(`domainMUV${i + 1}`);
+                if (n) n.value = d.name || '';
+                if (m) m.value = d.muv  || '';
+            });
+
+            // Populate mobile app rows
+            (c.mobileApps || []).forEach((a, i) => {
+                const n = document.getElementById(`appName${i + 1}`);
+                const m = document.getElementById(`appMAU${i + 1}`);
+                if (n) n.value = a.name || '';
+                if (m) m.value = a.mau  || '';
+            });
+
+            // Email & retail contacts
+            document.getElementById('monthlyEmails').value              = c.monthlyEmails               || '';
+            document.getElementById('emailPersonalizationPercent').value = c.emailPersonalizationPercent || '';
+            document.getElementById('numContacts').value                 = c.numContacts                 || '';
+
+            window._loadedConfig = null;
+        }
+
+        // ── Start over ───────────────────────────────────────────────────────
+
+        function startOver() {
+            document.getElementById('calculatorTitle').value = '';
+            document.getElementById('customerName').value = '';
+            document.getElementById('contractLength').value = '1';
+            document.getElementById('provisioningRegion').value = 'AMER';
+
+            document.querySelectorAll('.slds-checkbox-tile').forEach(item => {
+                item.classList.remove('slds-is-selected');
+                item.querySelector('input').checked = false;
+            });
+
+            // Reset Step 3 inputs
+            document.getElementById('numDomains').value = '1';
+            document.getElementById('domainInputsContainer').innerHTML = '';
+            document.getElementById('numMobileApps').value = '1';
+            document.getElementById('mobileAppInputsContainer').innerHTML = '';
+            document.getElementById('monthlyEmails').value = '';
+            document.getElementById('emailPersonalizationPercent').value = '';
+            document.getElementById('numContacts').value = '';
+
+            // Reset MCP ownership & usage questions
+            document.querySelectorAll('[data-radio-group="ownsMCP"], [data-radio-group="usesMCP"]').forEach(tile => {
+                tile.classList.remove('slds-is-selected');
+                tile.querySelector('input').checked = false;
+            });
+            document.getElementById('mcpUsageSection').classList.add('slds-hidden');
+
+            // Reset retail triggers section
+            document.getElementById('retailTriggersSection').classList.add('slds-hidden');
+            document.getElementById('otherTriggerSection').classList.add('slds-hidden');
+            document.getElementById('otherTriggerDescription').value = '';
+
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`stepCircle${i}`).classList.remove('slds-is-active', 'slds-is-completed');
+                if (i < 4) document.getElementById(`stepLine${i}`).classList.remove('slds-is-completed');
+                document.getElementById(`step${i}`).classList.remove('slds-is-active');
+            }
+            document.getElementById('stepCircle1').classList.add('slds-is-active');
+            document.getElementById('step1').classList.add('slds-is-active');
+
+            showLanding();
+        }
+    </script>
+</body>
+</html>
