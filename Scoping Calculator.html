@@ -1177,6 +1177,18 @@
                         </div>
                     </div>
 
+                    <!-- MCP Named Profiles Section (shown when customer owns & actively uses MCP) -->
+                    <div id="mcpNamedProfilesSection" class="slds-volume-section slds-hidden">
+                        <h4 class="slds-volume-section__title">
+                            <span class="slds-icon-text">👤</span> Marketing Cloud Personalization — Named Profiles
+                        </h4>
+                        <p class="slds-text-color_weak" style="margin-bottom: 1rem; font-size: 0.8125rem;">Since the customer owns and is actively using Marketing Cloud Personalization, we need to understand the number of Named Profiles in their MCP instance. This is used to recommend the correct quantity of the Named Profiles SKU. The formula is: <strong>Named Profile Units = Named Profiles ÷ 100,000</strong>.</p>
+                        <div class="slds-form-element" style="margin-bottom: 0;">
+                            <label class="slds-form-element__label" for="numNamedProfiles">Number of Named Profiles in MCP</label>
+                            <input type="number" class="slds-input" id="numNamedProfiles" placeholder="e.g., 500000" min="0">
+                        </div>
+                    </div>
+
                     <!-- Retail Triggers Volume Section -->
                     <div id="retailVolumeSection" class="slds-volume-section slds-hidden">
                         <h4 class="slds-volume-section__title">
@@ -1515,6 +1527,11 @@
             // Retail triggers section
             document.getElementById('retailVolumeSection').classList.toggle('slds-hidden',
                 !channels.includes('retail'));
+
+            // MCP Named Profiles section (only when customer owns AND actively uses MCP)
+            const showNamedProfiles = document.getElementById('ownsMCPYes').checked &&
+                                      document.getElementById('usesMCPYes').checked;
+            document.getElementById('mcpNamedProfilesSection').classList.toggle('slds-hidden', !showNamedProfiles);
         }
 
         function validateVolumes() {
@@ -1549,6 +1566,12 @@
             if (channels.includes('retail')) {
                 if (!document.getElementById('numContacts').value.trim()) {
                     missing.push('Number of Contacts');
+                }
+            }
+
+            if (document.getElementById('ownsMCPYes').checked && document.getElementById('usesMCPYes').checked) {
+                if (!document.getElementById('numNamedProfiles').value.trim()) {
+                    missing.push('Number of Named Profiles in MCP');
                 }
             }
 
@@ -1703,6 +1726,7 @@
             } else if (hasRetailTriggers) {
                 // Retail Triggers path: MCP+ and associated MCP SKUs
                 const numContacts = parseInt(document.getElementById('numContacts').value) || 0;
+                const numNamedProfiles = parseInt(document.getElementById('numNamedProfiles').value) || 0;
 
                 skus.push({
                     name: `Marketing Cloud Personalization+ (${region})`,
@@ -1719,12 +1743,12 @@
                     });
                 }
 
-                if (numContacts > 0) {
-                    const namedProfiles = Math.ceil(numContacts / 100000);
+                const profileCount = mcpActivelyUsed && numNamedProfiles > 0 ? numNamedProfiles : numContacts;
+                if (profileCount > 0) {
                     skus.push({
                         name: 'Marketing Cloud Personalization - Named Profiles (Premium)',
-                        quantity: namedProfiles,
-                        notes: 'Contacts / 100,000 - Discount to 100% in order to divert funds to cover either SSRT profiles or RT event ingest via Flex'
+                        quantity: Math.ceil(profileCount / 100000),
+                        notes: 'Named Profiles ÷ 100,000 — Discount to 100% in order to divert funds to cover either SSRT profiles or RT event ingest via Flex'
                     });
                 }
 
@@ -1744,6 +1768,16 @@
                     });
                 }
             } else if (hasWebOrMobile) {
+                // If MCP actively used, add Named Profiles SKU
+                const numNamedProfiles = parseInt(document.getElementById('numNamedProfiles').value) || 0;
+                if (mcpActivelyUsed && numNamedProfiles > 0) {
+                    skus.push({
+                        name: 'Marketing Cloud Personalization - Named Profiles (Premium)',
+                        quantity: Math.ceil(numNamedProfiles / 100000),
+                        notes: 'Named Profiles ÷ 100,000 — Discount to 100% in order to divert funds to cover either SSRT profiles or RT event ingest via Flex'
+                    });
+                }
+
                 // Web/Mobile path: Salesforce Personalization + Personalization Card
                 skus.push({
                     name: 'Salesforce Personalization',
@@ -1976,6 +2010,7 @@
                 monthlyEmails:              document.getElementById('monthlyEmails').value,
                 emailPersonalizationPercent:document.getElementById('emailPersonalizationPercent').value,
                 numContacts:                document.getElementById('numContacts').value,
+                numNamedProfiles:           document.getElementById('numNamedProfiles').value,
                 retailTriggers,
                 otherTriggerDescription:    document.getElementById('otherTriggerDescription')?.value || ''
             };
@@ -2115,6 +2150,7 @@
             document.getElementById('monthlyEmails').value              = c.monthlyEmails               || '';
             document.getElementById('emailPersonalizationPercent').value = c.emailPersonalizationPercent || '';
             document.getElementById('numContacts').value                 = c.numContacts                 || '';
+            document.getElementById('numNamedProfiles').value            = c.numNamedProfiles            || '';
 
             window._loadedConfig = null;
         }
@@ -2140,6 +2176,7 @@
             document.getElementById('monthlyEmails').value = '';
             document.getElementById('emailPersonalizationPercent').value = '';
             document.getElementById('numContacts').value = '';
+            document.getElementById('numNamedProfiles').value = '';
 
             // Reset MCP ownership & usage questions
             document.querySelectorAll('[data-radio-group="ownsMCP"], [data-radio-group="usesMCP"]').forEach(tile => {
