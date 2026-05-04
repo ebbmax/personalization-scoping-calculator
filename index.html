@@ -1541,6 +1541,11 @@
                     alert('Please enter the customer name.');
                     return false;
                 }
+                const ownsMCPAnswered = document.getElementById('ownsMCPYes').checked || document.getElementById('ownsMCPNo').checked;
+                if (!ownsMCPAnswered) {
+                    alert('Please indicate whether the customer owns Marketing Cloud Personalization today.');
+                    return false;
+                }
             }
             if (step === 2) {
                 const channels = getSelectedChannels();
@@ -1595,7 +1600,51 @@
                 !channels.includes('retail'));
         }
 
+        function validateVolumes() {
+            const channels = getSelectedChannels();
+            const missing = [];
+
+            if (channels.includes('web')) {
+                const numDomains = parseInt(document.getElementById('numDomains').value) || 1;
+                for (let i = 1; i <= numDomains; i++) {
+                    const muv = document.getElementById(`domainMUV${i}`)?.value.trim();
+                    if (!muv) { missing.push(`Monthly Unique Visitors for Website ${i}`); }
+                }
+            }
+
+            if (channels.includes('mobile')) {
+                const numApps = parseInt(document.getElementById('numMobileApps').value) || 1;
+                for (let i = 1; i <= numApps; i++) {
+                    const mau = document.getElementById(`appMAU${i}`)?.value.trim();
+                    if (!mau) { missing.push(`Monthly Active Users for Mobile App ${i}`); }
+                }
+            }
+
+            if (channels.includes('mce') || channels.includes('mca')) {
+                if (!document.getElementById('monthlyEmails').value.trim()) {
+                    missing.push('Monthly Emails Sent');
+                }
+                if (!document.getElementById('emailPersonalizationPercent').value.trim()) {
+                    missing.push('% of Emails with Personalized Recommendations');
+                }
+            }
+
+            if (channels.includes('retail')) {
+                if (!document.getElementById('numContacts').value.trim()) {
+                    missing.push('Number of Contacts');
+                }
+            }
+
+            if (missing.length > 0) {
+                alert('Please fill in the following required fields before generating SKUs:\n\n• ' + missing.join('\n• '));
+                return false;
+            }
+            return true;
+        }
+
         function generateSKUs() {
+            if (!validateVolumes()) return;
+
             document.getElementById('step3').classList.remove('slds-is-active');
             document.getElementById('step4').classList.add('slds-is-active');
 
