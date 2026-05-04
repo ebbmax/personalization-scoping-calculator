@@ -787,73 +787,9 @@
             color: var(--slds-g-color-neutral-base-50);
         }
 
-        /* Password gate */
-        #pwGate {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, #032d60 0%, #0176d3 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        #pwGate.slds-hidden {
-            display: none !important;
-        }
-
-        .pw-card {
-            background: #ffffff;
-            border-radius: var(--slds-g-radius-border-3);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 2.5rem 2rem;
-            width: 100%;
-            max-width: 360px;
-            text-align: center;
-        }
-
-        .pw-card__logo {
-            font-size: 2rem;
-            margin-bottom: var(--slds-g-spacing-4);
-        }
-
-        .pw-card__title {
-            font-size: var(--slds-g-font-size-7);
-            font-weight: var(--slds-g-font-weight-bold);
-            color: var(--slds-g-color-neutral-base-10);
-            margin-bottom: var(--slds-g-spacing-2);
-        }
-
-        .pw-card__subtitle {
-            font-size: var(--slds-g-font-size-3);
-            color: var(--slds-g-color-neutral-base-50);
-            margin-bottom: var(--slds-g-spacing-6);
-        }
-
-        .pw-card__error {
-            font-size: var(--slds-g-font-size-3);
-            color: var(--slds-g-color-error-base-50);
-            margin-top: var(--slds-g-spacing-3);
-            min-height: 1.25rem;
-        }
     </style>
 </head>
 <body>
-    <!-- Password Gate -->
-    <div id="pwGate">
-        <div class="pw-card">
-            <div class="pw-card__logo">🔒</div>
-            <div class="pw-card__title">Personalization Scoping Calculator</div>
-            <p class="pw-card__subtitle">Enter the password to continue</p>
-            <div class="slds-form-element" style="margin-bottom: var(--slds-g-spacing-4); text-align: left;">
-                <label class="slds-form-element__label" for="pwInput">Password</label>
-                <input type="password" class="slds-input" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter') checkPassword()">
-            </div>
-            <button class="slds-button slds-button_brand slds-button_stretch" onclick="checkPassword()">Continue</button>
-            <div class="pw-card__error" id="pwError"></div>
-        </div>
-    </div>
-
     <!-- Main Application -->
     <div class="slds-app-container" id="appContainer">
         <!-- Page Header -->
@@ -1330,25 +1266,6 @@
     </div>
 
     <script>
-        // ── Password gate ────────────────────────────────────────────────────
-        (function() {
-            if (sessionStorage.getItem('spscoping_auth') === '1') {
-                document.getElementById('pwGate').classList.add('slds-hidden');
-            }
-        })();
-
-        function checkPassword() {
-            const val = document.getElementById('pwInput').value;
-            if (val === 'spscoping') {
-                sessionStorage.setItem('spscoping_auth', '1');
-                document.getElementById('pwGate').classList.add('slds-hidden');
-            } else {
-                document.getElementById('pwError').textContent = 'Incorrect password. Please try again.';
-                document.getElementById('pwInput').value = '';
-                document.getElementById('pwInput').focus();
-            }
-        }
-
         // Toggle radio-style yes/no tiles
         function toggleRadio(item, groupName, isYes) {
             // Deselect all tiles in this group
