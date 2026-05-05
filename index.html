@@ -1753,17 +1753,27 @@
                 }
 
                 // Also include Personalization Card for credit estimation
-                const webCredits = totalWebMUVs > 0 ? Math.ceil((totalWebMUVs * 8 * 12 * contractLength) / 1000000) : 0;
-                const mobileCredits = totalMobileMAUs > 0 ? Math.ceil((totalMobileMAUs * 8 * 12 * contractLength) / 1000000) : 0;
+                const webCredits = (channels.includes('web') && totalWebMUVs > 0) ? Math.ceil((totalWebMUVs * 8 * 12 * contractLength) / 1000000) : 0;
+                const mobileCredits = (channels.includes('mobile') && totalMobileMAUs > 0) ? Math.ceil((totalMobileMAUs * 8 * 12 * contractLength) / 1000000) : 0;
                 const emailCredits = (channels.includes('mca') && monthlyEmails > 0 && emailPercent > 0)
                     ? Math.ceil((monthlyEmails * (emailPercent / 100) * 1.25 * 12 * contractLength) / 1000000) : 0;
 
                 const totalCredits = webCredits + mobileCredits + emailCredits;
 
-                if (totalCredits > 0) {
+                // MCP+ includes 50M credits per contract year — deduct before recommending additional cards
+                const includedCredits = 50 * contractLength;
+                const additionalCreditsNeeded = Math.max(0, totalCredits - includedCredits);
+
+                if (additionalCreditsNeeded > 0) {
                     skus.push({
                         name: 'Salesforce Personalization Card (1M Credits)',
-                        quantity: totalCredits,
+                        quantity: additionalCreditsNeeded,
+                        notes: 'The quantity recommended accounts for personalization consumption across all selected channels.'
+                    });
+                } else if (totalCredits > 0) {
+                    skus.push({
+                        name: 'Salesforce Personalization Card (1M Credits)',
+                        quantity: 0,
                         notes: 'The quantity recommended accounts for personalization consumption across all selected channels.'
                     });
                 }
