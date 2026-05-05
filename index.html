@@ -1482,6 +1482,10 @@
                     alert('Please select at least one channel.');
                     return false;
                 }
+                if (channels.includes('retail') && !channels.includes('mce') && !channels.includes('mca')) {
+                    alert('Retail Triggers requires either Marketing Cloud Engagement or Marketing Cloud Advanced to be selected.');
+                    return false;
+                }
             }
             return true;
         }
