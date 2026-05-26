@@ -629,6 +629,59 @@
             margin-right: var(--slds-g-spacing-2);
         }
 
+        /* Advanced settings disclosure */
+        .slds-advanced-settings {
+            margin-top: var(--slds-g-spacing-4);
+            background: var(--slds-g-color-neutral-base-100);
+            border: 1px solid var(--slds-g-color-neutral-base-90);
+            border-radius: var(--slds-g-radius-border-2);
+            padding: 0;
+        }
+
+        .slds-advanced-settings[open] {
+            padding-bottom: var(--slds-g-spacing-4);
+        }
+
+        .slds-advanced-settings > summary {
+            cursor: pointer;
+            padding: var(--slds-g-spacing-3) var(--slds-g-spacing-4);
+            font-size: var(--slds-g-font-size-2);
+            font-weight: var(--slds-g-font-weight-bold);
+            color: var(--slds-g-color-brand-base-50);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: var(--slds-g-spacing-2);
+            user-select: none;
+        }
+
+        .slds-advanced-settings > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .slds-advanced-settings > summary::before {
+            content: '▸';
+            display: inline-block;
+            transition: transform 0.15s;
+            font-size: 0.85em;
+        }
+
+        .slds-advanced-settings[open] > summary::before {
+            transform: rotate(90deg);
+        }
+
+        .slds-advanced-settings__body {
+            padding: 0 var(--slds-g-spacing-4);
+        }
+
+        .slds-advanced-settings__hint {
+            font-size: 0.75rem;
+            color: var(--slds-g-color-neutral-base-50);
+            margin-top: var(--slds-g-spacing-1);
+        }
+
         /* Dynamic entry rows */
         .slds-entry-row {
             background: var(--slds-g-color-neutral-base-100);
@@ -1125,7 +1178,7 @@
                         <h4 class="slds-volume-section__title">
                             <span class="slds-icon-text">🌐</span> Web Personalization
                         </h4>
-                        <p class="slds-text-color_weak" style="margin-bottom: 1rem; font-size: 0.8125rem;">To help estimate the number of personalization credits required for decisioning, we need to understand the number of websites where personalization will be applied and the associated MUVs for each website. We currently use the following formula to estimate the number of decision credits required per MUV on each site: <strong>Personalization Credits = MUVs × 8 Decisions Per MUV × 12 Months × Contract Length</strong>.</p>
+                        <p class="slds-text-color_weak" style="margin-bottom: 1rem; font-size: 0.8125rem;">To help estimate the number of personalization credits required for decisioning, we need to understand the number of websites where personalization will be applied and the associated MUVs for each website. We currently use the following formula to estimate the number of decision credits required per MUV on each site: <strong>Personalization Credits = MUVs × Decisions Per MUV (default 8) × 12 Months × Contract Length</strong>. Use Advanced Settings below to override the decisions per MUV.</p>
 
                         <div class="slds-form-element" style="margin-bottom: 1.5rem;">
                             <label class="slds-form-element__label" for="numDomains">Number of Unique Website Domains</label>
@@ -1135,6 +1188,17 @@
                         <div id="domainInputsContainer">
                             <!-- Dynamic domain inputs will be added here -->
                         </div>
+
+                        <details class="slds-advanced-settings">
+                            <summary>Advanced Settings</summary>
+                            <div class="slds-advanced-settings__body">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="webDecisionsPerMUV">Decisions Per MUV</label>
+                                    <input type="number" class="slds-input" id="webDecisionsPerMUV" value="8" min="0" step="1">
+                                    <p class="slds-advanced-settings__hint">Default is 8. Override to tune the credit estimate for this customer's expected web decisioning volume.</p>
+                                </div>
+                            </div>
+                        </details>
                     </div>
 
                     <!-- Mobile Volume Section -->
@@ -1152,6 +1216,17 @@
                         <div id="mobileAppInputsContainer">
                             <!-- Dynamic mobile app inputs will be added here -->
                         </div>
+
+                        <details class="slds-advanced-settings">
+                            <summary>Advanced Settings</summary>
+                            <div class="slds-advanced-settings__body">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="mobileDecisionsPerMAU">Decisions Per MAU</label>
+                                    <input type="number" class="slds-input" id="mobileDecisionsPerMAU" value="8" min="0" step="1">
+                                    <p class="slds-advanced-settings__hint">Default is 8. Override to tune the credit estimate for this customer's expected mobile app decisioning volume.</p>
+                                </div>
+                            </div>
+                        </details>
                     </div>
 
                     <!-- Email Volume Section -->
@@ -1707,6 +1782,12 @@
             const monthlyEmails = parseInt(document.getElementById('monthlyEmails').value) || 0;
             const emailPercent = parseInt(document.getElementById('emailPersonalizationPercent').value) || 0;
 
+            // Advanced overrides — default to 8 if blank/invalid
+            const webDecisionsRaw = parseFloat(document.getElementById('webDecisionsPerMUV')?.value);
+            const mobileDecisionsRaw = parseFloat(document.getElementById('mobileDecisionsPerMAU')?.value);
+            const webDecisionsPerMUV = Number.isFinite(webDecisionsRaw) && webDecisionsRaw >= 0 ? webDecisionsRaw : 8;
+            const mobileDecisionsPerMAU = Number.isFinite(mobileDecisionsRaw) && mobileDecisionsRaw >= 0 ? mobileDecisionsRaw : 8;
+
             const totalMUVs = totalWebMUVs + totalMobileMAUs;
 
             // Determine which SKU path to use
@@ -1757,8 +1838,8 @@
                 }
 
                 // Also include Personalization Card for credit estimation
-                const webCredits = (channels.includes('web') && totalWebMUVs > 0) ? Math.ceil((totalWebMUVs * 8 * 12 * contractLength) / 1000000) : 0;
-                const mobileCredits = (channels.includes('mobile') && totalMobileMAUs > 0) ? Math.ceil((totalMobileMAUs * 8 * 12 * contractLength) / 1000000) : 0;
+                const webCredits = (channels.includes('web') && totalWebMUVs > 0) ? Math.ceil((totalWebMUVs * webDecisionsPerMUV * 12 * contractLength) / 1000000) : 0;
+                const mobileCredits = (channels.includes('mobile') && totalMobileMAUs > 0) ? Math.ceil((totalMobileMAUs * mobileDecisionsPerMAU * 12 * contractLength) / 1000000) : 0;
                 const emailCredits = (channels.includes('mca') && monthlyEmails > 0 && emailPercent > 0)
                     ? Math.ceil((monthlyEmails * (emailPercent / 100) * 1.25 * 12 * contractLength) / 1000000) : 0;
 
@@ -1800,8 +1881,8 @@
                 });
 
                 // Calculate credits by channel
-                const webCredits = totalWebMUVs > 0 ? Math.ceil((totalWebMUVs * 8 * 12 * contractLength) / 1000000) : 0;
-                const mobileCredits = totalMobileMAUs > 0 ? Math.ceil((totalMobileMAUs * 8 * 12 * contractLength) / 1000000) : 0;
+                const webCredits = totalWebMUVs > 0 ? Math.ceil((totalWebMUVs * webDecisionsPerMUV * 12 * contractLength) / 1000000) : 0;
+                const mobileCredits = totalMobileMAUs > 0 ? Math.ceil((totalMobileMAUs * mobileDecisionsPerMAU * 12 * contractLength) / 1000000) : 0;
                 const emailCredits = (channels.includes('mca') && monthlyEmails > 0 && emailPercent > 0)
                     ? Math.ceil((monthlyEmails * (emailPercent / 100) * 1.25 * 12 * contractLength) / 1000000) : 0;
 
@@ -2026,7 +2107,9 @@
                 numContacts:                document.getElementById('numContacts').value,
                 numNamedProfiles:           document.getElementById('numNamedProfiles').value,
                 retailTriggers,
-                otherTriggerDescription:    document.getElementById('otherTriggerDescription')?.value || ''
+                otherTriggerDescription:    document.getElementById('otherTriggerDescription')?.value || '',
+                webDecisionsPerMUV:         document.getElementById('webDecisionsPerMUV')?.value || '',
+                mobileDecisionsPerMAU:      document.getElementById('mobileDecisionsPerMAU')?.value || ''
             };
 
             const json     = JSON.stringify(config, null, 2);
@@ -2166,6 +2249,10 @@
             document.getElementById('numContacts').value                 = c.numContacts                 || '';
             document.getElementById('numNamedProfiles').value            = c.numNamedProfiles            || '';
 
+            // Advanced overrides — restore user value, otherwise keep default of 8
+            document.getElementById('webDecisionsPerMUV').value    = c.webDecisionsPerMUV    || '8';
+            document.getElementById('mobileDecisionsPerMAU').value = c.mobileDecisionsPerMAU || '8';
+
             window._loadedConfig = null;
         }
 
@@ -2191,6 +2278,8 @@
             document.getElementById('emailPersonalizationPercent').value = '';
             document.getElementById('numContacts').value = '';
             document.getElementById('numNamedProfiles').value = '';
+            document.getElementById('webDecisionsPerMUV').value = '8';
+            document.getElementById('mobileDecisionsPerMAU').value = '8';
 
             // Reset MCP ownership & usage questions
             document.querySelectorAll('[data-radio-group="ownsMCP"], [data-radio-group="usesMCP"]').forEach(tile => {

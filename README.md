@@ -47,6 +47,8 @@ Enter volume inputs for each selected channel:
 - **Email** — monthly emails sent + % of emails using personalized recommendations
 - **Retail** — number of named contacts
 
+Each of the **Web** and **Mobile** sections includes an **Advanced Settings** panel where the *Decisions Per MUV* (web) and *Decisions Per MAU* (mobile) used in the credit-calculation formula can be overridden. Both default to **8** and can be configured independently to make the credit estimate higher or lower than the default.
+
 All volume fields are required before SKUs can be generated.
 
 ### Step 4 — Recommended SKUs
